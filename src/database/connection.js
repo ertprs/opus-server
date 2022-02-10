@@ -34,9 +34,9 @@ const sequelize = new Sequelize(conection, {
 async function connection() {
     try {
         await sequelize.authenticate();
-        console.log('Successful connection to database');
+        console.log('\x1b[32m%s\x1b[0m','Successful connection to database');
     } catch (error) {
-        console.log('Cannot connect to database:', error);
+        console.log('\x1b[31m%s\x1b[0m','Cannot connect to database:', error);
     }
 }
 

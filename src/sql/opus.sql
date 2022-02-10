@@ -90,7 +90,7 @@ CREATE TABLE "role"(
  "details" Text,
  "isActive" Boolean DEFAULT true NOT NULL,
  "options" Json,
- "createAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+ "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
  "updatedAt" Timestamp with time zone,
  "deletedAt" Timestamp with time zone
 )
@@ -114,7 +114,7 @@ false: inactive role'
 ;
 COMMENT ON COLUMN "role"."options" IS 'An object to store configuration optios for a role'
 ;
-COMMENT ON COLUMN "role"."createAt" IS 'Creation timestamp'
+COMMENT ON COLUMN "role"."createdAt" IS 'Creation timestamp'
 ;
 COMMENT ON COLUMN "role"."updatedAt" IS 'Updated timestamp'
 ;
@@ -151,7 +151,7 @@ CREATE TABLE "person"(
  "birthdate" Date,
  "details" Text,
  "isActive" Boolean DEFAULT true NOT NULL,
- "createAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+ "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
  "updatedAt" Timestamp with time zone,
  "deletedAt" Timestamp with time zone
 )
@@ -183,7 +183,7 @@ COMMENT ON COLUMN "person"."details" IS 'Additional details for the person if it
 COMMENT ON COLUMN "person"."isActive" IS 'true: active person
 false: inactive person'
 ;
-COMMENT ON COLUMN "person"."createAt" IS 'Creation timestamp'
+COMMENT ON COLUMN "person"."createdAt" IS 'Creation timestamp'
 ;
 COMMENT ON COLUMN "person"."updatedAt" IS 'Updated timestamp'
 ;

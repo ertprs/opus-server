@@ -2,11 +2,12 @@
 const Role = require('../models/Role');
 const { response } = require('express');
 const { sequelize } = require('../database/connection');
+const { getUuid } = require('../helpers/uuidGenerator');
+const { opusLog } = require('../helpers/log4js');
 
 // Language and messages import
 const messageFile = require('../data/messages.json');
 const { selectLanguage } = require('../helpers/selectLanguage');
-const { getUuid } = require('../helpers/uuidGenerator');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 
 // Creating a role
@@ -40,6 +41,7 @@ const createRole = async(req, res = response) => {
         }
     } catch (error) {
         console.log('Error:', error);
+        opusLog(`Creating role [${ name }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].errorCreating + "role",
@@ -74,6 +76,7 @@ const getActiveRoles = async(req, res = response) => {
             });
         }
     } catch (error) {
+        opusLog(`Getting active roles: ${ error }`, 'error');
         console.log('Error:', error);
         return res.status(500).json({
             ok: false,
@@ -107,6 +110,7 @@ const getAllRoles = async(req, res = response) => {
         }
     } catch (error) {
         console.log('Error:', error);
+        opusLog(`Getting all roles: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].errorGetting + "roles",
@@ -155,6 +159,7 @@ const updateRole = async(req, res = response) => {
         });
     } catch (error) {
         console.log('Error:', error);
+        opusLog(`Updating role [${ name }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].errorUpdating + 'role',
@@ -229,6 +234,7 @@ const changeRoleStatus = async(req, res = response) => {
         });
     } catch (error) {
         console.log('Error:', error);
+        opusLog(`Changing role status  [${ roleId }/${ activation }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].errorChangeStatus
@@ -258,6 +264,7 @@ const deleteRole = async(req, res = response) => {
         }
     } catch (error) {
         console.log('Error:', error);
+        opusLog(`Deleting role [${ roleId }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].errorDeleting + 'role'

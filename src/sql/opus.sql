@@ -218,7 +218,7 @@ CREATE TABLE "company"(
  "logo" Character varying(500),
  "slogan" Character varying(500),
  "details" Text,
- "isActive" Boolean,
+ "isActive" Boolean DEFAULT true NOT NULL,
  "description" Text,
  "createdAt" Timestamp DEFAULT current_timestamp NOT NULL,
  "updatedAt" Timestamp,

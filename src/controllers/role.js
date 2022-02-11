@@ -14,7 +14,7 @@ const createRole = async(req, res = response) => {
     const {
         name,
         description,
-        elevation, 
+        elevation,
         options,
         details
     } = req.body;
@@ -31,7 +31,7 @@ const createRole = async(req, res = response) => {
             fields: ['uuid', 'name', 'description', 'elevation', 'details'],
             returning: ['roleId', 'uuid', 'name', 'description', 'elevation', 'details', 'isActive', 'createdAt']
         });
-        if( newRole ) {
+        if (newRole) {
             return res.status(200).json({
                 ok: true,
                 msg: 'Role' + messageFile[index].okCreateMale,
@@ -61,7 +61,7 @@ const getActiveRoles = async(req, res = response) => {
             limit,
             offset
         });
-        if( activeRoles.count > 0 ) {
+        if (activeRoles.count > 0) {
             return res.status(200).json({
                 ok: false,
                 msg: 'Roles' + messageFile[index].okGotMalePlural,
@@ -93,7 +93,7 @@ const getAllRoles = async(req, res = response) => {
             limit,
             offset
         });
-        if( roles.count > 0 ) {
+        if (roles.count > 0) {
             return res.status(200).json({
                 ok: false,
                 msg: 'Roles' + messageFile[index].okGotMalePlural,
@@ -131,13 +131,13 @@ const updateRole = async(req, res = response) => {
                 roleId
             }
         });
-        if( findRole === undefined || findRole === null ) {
+        if (findRole === undefined || findRole === null) {
             return res.status(404).json({
                 ok: false,
                 msg: messageFile[index].notFound + 'role'
             });
-        } 
-        const updatedRole = await Role.update({
+        }
+        await Role.update({
             name,
             description,
             elevation,
@@ -151,14 +151,116 @@ const updateRole = async(req, res = response) => {
         });
         return res.status(200).json({
             ok: true,
-            msg: messageFile[index].okUpdateMale + "role"
+            msg: messageFile[index].okUpdateMale + 'role'
         });
     } catch (error) {
         console.log('Error:', error);
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorUpdating + "role",
+            msg: messageFile[index].errorUpdating + 'role',
             error
+        });
+    }
+}
+
+// Change the status of a role
+const changeRoleStatus = async(req, res = response) => {
+    const roleId = req.params.id;
+    const type = req.query.type || false;
+    let changeAction;
+    let action;
+    let activation;
+
+    if (!type) {
+        return res.status(400).json({
+            ok: false,
+            msg: 'Type' + messageFile[index].notParam
+        });
+    }
+
+    if (type.toLowerCase() === 'on') {
+        activation = true;
+        action = 'Role' + messageFile[index].changeStatusActionOnMale
+        changeAction = {
+            isActive: true,
+            updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
+            deletedAt: null
+        }
+    } else {
+        if (type.toLowerCase() === 'off') {
+            activation = false;
+            action = 'Role' + messageFile[index].changeStatusActionOffMale
+            changeAction = {
+                isActive: false,
+                updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
+                deletedAt: sequelize.literal('CURRENT_TIMESTAMP')
+            }
+        } else {
+            return res.status(400).json({
+                ok: false,
+                msg: type + messageFile[index].invalidParam
+            });
+        }
+    }
+    try {
+        const findRole = await Role.findOne({
+            where: {
+                roleId,
+                isActive: !activation
+            }
+        });
+        if (!findRole) {
+            return res.status(404).json({
+                ok: false,
+                msg: `${ messageFile[index].notFound }role${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
+            });
+        }
+        await Role.update(
+            changeAction, {
+                where: {
+                    roleId
+                }
+            }
+        );
+
+        return res.status(200).json({
+            ok: true,
+            msg: action,
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorChangeStatus
+        })
+    }
+}
+
+// Physical deletion of a role
+const deleteRole = async(req, res = response) => {
+    const roleId = req.params.id;
+    try {
+        const deletedRole = await Role.destroy({
+            where: {
+                roleId
+            }
+        });
+        if (deletedRole > 0) {
+            return res.status(200).json({
+                ok: true,
+                msg: 'Role' + messageFile[index].okDeletMale
+            });
+        } else {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + 'role'
+            })
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorDeleting + 'role'
         });
     }
 }
@@ -167,5 +269,7 @@ module.exports = {
     createRole,
     getActiveRoles,
     getAllRoles,
-    updateRole
+    updateRole,
+    changeRoleStatus,
+    deleteRole
 }

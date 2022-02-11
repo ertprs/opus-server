@@ -22,5 +22,5 @@ app.use(require('./routes/index'));
 
 // Listen requests
 app.listen(process.env.PORT || 3000, () => {
-    console.log('\x1b[34m%s\x1b[0m', `Server running on port ${ process.env.PORT || 3000 }`);
+    console.log('\x1b[36m%s\x1b[0m', `Server running on port ${ process.env.PORT || 3000 }`);
 });

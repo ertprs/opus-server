@@ -7,6 +7,7 @@ const { opusLog } = require('../helpers/log4js');
 
 // Language and messages import
 const messageFile = require('../data/messages.json');
+const entityFile = require('../data/entities.json');
 const { selectLanguage } = require('../helpers/selectLanguage');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 
@@ -35,7 +36,7 @@ const createRole = async(req, res = response) => {
         if (newRole) {
             return res.status(200).json({
                 ok: true,
-                msg: 'Role' + messageFile[index].okCreateMale,
+                msg: entityFile[index].roleUp + messageFile[index].okCreateMale,
                 role: newRole
             });
         }
@@ -44,7 +45,7 @@ const createRole = async(req, res = response) => {
         opusLog(`Creating role [${ name }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorCreating + "role",
+            msg: messageFile[index].errorCreating + entityFile[idex].roleLow,
             error
         });
     }
@@ -66,13 +67,13 @@ const getActiveRoles = async(req, res = response) => {
         if (activeRoles.count > 0) {
             return res.status(200).json({
                 ok: false,
-                msg: 'Roles' + messageFile[index].okGotMalePlural,
+                msg: entityFile[index].rolePluralUp + messageFile[index].okGotMalePlural,
                 roles: activeRoles
             });
         } else {
             return res.status(404).json({
                 ok: false,
-                msg: messageFile[index].notFound + "roles"
+                msg: messageFile[index].notFound + entityFile[index].rolePluralLow
             });
         }
     } catch (error) {
@@ -80,7 +81,7 @@ const getActiveRoles = async(req, res = response) => {
         console.log('Error:', error);
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorGetting + "roles",
+            msg: messageFile[index].errorGetting + entityFile[index].rolePluralLow,
             error
         });
     }
@@ -99,13 +100,13 @@ const getAllRoles = async(req, res = response) => {
         if (roles.count > 0) {
             return res.status(200).json({
                 ok: false,
-                msg: 'Roles' + messageFile[index].okGotMalePlural,
+                msg: entityFile[index].rolePluralUp + messageFile[index].okGotMalePlural,
                 roles
             });
         } else {
             return res.status(404).json({
                 ok: false,
-                msg: messageFile[index].notFound + "roles"
+                msg: messageFile[index].notFound + entityFile[index].rolePluralLow
             });
         }
     } catch (error) {
@@ -138,7 +139,7 @@ const updateRole = async(req, res = response) => {
         if (findRole === undefined || findRole === null) {
             return res.status(404).json({
                 ok: false,
-                msg: messageFile[index].notFound + 'role'
+                msg: messageFile[index].notFound + entityFile[index].roleLow
             });
         }
         await Role.update({
@@ -155,14 +156,14 @@ const updateRole = async(req, res = response) => {
         });
         return res.status(200).json({
             ok: true,
-            msg: messageFile[index].okUpdateMale + 'role'
+            msg: entityFile[index].roleUp + messageFile[index].okUpdateMale
         });
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Updating role [${ name }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorUpdating + 'role',
+            msg: messageFile[index].errorUpdating + entityFile[index].roleLow,
             error
         });
     }
@@ -179,13 +180,13 @@ const changeRoleStatus = async(req, res = response) => {
     if (!type) {
         return res.status(400).json({
             ok: false,
-            msg: 'Type' + messageFile[index].notParam
+            msg: entityFile[index].typeUp + messageFile[index].notParam
         });
     }
 
     if (type.toLowerCase() === 'on') {
         activation = true;
-        action = 'Role' + messageFile[index].changeStatusActionOnMale
+        action = entityFile[index].roleUp + messageFile[index].changeStatusActionOnMale
         changeAction = {
             isActive: true,
             updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
@@ -194,7 +195,7 @@ const changeRoleStatus = async(req, res = response) => {
     } else {
         if (type.toLowerCase() === 'off') {
             activation = false;
-            action = 'Role' + messageFile[index].changeStatusActionOffMale
+            action = entityFile[index].roleUp + messageFile[index].changeStatusActionOffMale
             changeAction = {
                 isActive: false,
                 updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
@@ -217,7 +218,7 @@ const changeRoleStatus = async(req, res = response) => {
         if (!findRole) {
             return res.status(404).json({
                 ok: false,
-                msg: `${ messageFile[index].notFound }role${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
+                msg: `${ messageFile[index].notFound }${ entityFile[index].roleLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
         }
         await Role.update(
@@ -254,12 +255,12 @@ const deleteRole = async(req, res = response) => {
         if (deletedRole > 0) {
             return res.status(200).json({
                 ok: true,
-                msg: 'Role' + messageFile[index].okDeletMale
+                msg: entityFile[index].roleUp + messageFile[index].okDeletMale
             });
         } else {
             return res.status(404).json({
                 ok: false,
-                msg: messageFile[index].notFound + 'role'
+                msg: messageFile[index].notFound + entityFile[index].roleLow
             })
         }
     } catch (error) {
@@ -267,7 +268,7 @@ const deleteRole = async(req, res = response) => {
         opusLog(`Deleting role [${ roleId }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorDeleting + 'role'
+            msg: messageFile[index].errorDeleting + entityFile[index].roleLow
         });
     }
 }

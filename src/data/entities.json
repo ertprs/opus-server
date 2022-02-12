@@ -1,0 +1,27 @@
+[{
+        "language": "es",
+        "roleUp": "Rol",
+        "roleLow": "rol",
+        "rolePluralUp": "Roles",
+        "rolePluralLow": "roles",
+        "companyUp": "Empresa",
+        "companyLow": "empresa",
+        "compnayPluralUp": "Empresas",
+        "companyPluralLow": "empresas",
+        "typeUp": "Tipo",
+        "typeLow": "tipo"
+    },
+    {
+        "language": "en",
+        "roleUp": "Role",
+        "roleLow": "role",
+        "rolePluralUp": "Roles",
+        "rolePluralLow": "roles",
+        "companyUp": "Company",
+        "companyLow": "company",
+        "compnayPluralUp": "Companies",
+        "companyPluralLow": "companies",
+        "typeUp": "Type",
+        "typeLow": "type"
+    }
+]

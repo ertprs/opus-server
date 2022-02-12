@@ -8,13 +8,11 @@ const Company = sequelize.define('company', {
     },
     uuid: {
         type: Sequelize.STRING(10),
-        required: true,
         allowNull: false,
         unique: true
     },
     name: {
         type: Sequelize.STRING(400),
-        required: true,
         allowNull: false
     },
     shortName: {
@@ -31,7 +29,6 @@ const Company = sequelize.define('company', {
     },
     isActive: {
         type: Sequelize.BOOLEAN,
-        required: true,
         allowNull: false,
         defaultValue: true
     },

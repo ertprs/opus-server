@@ -1,6 +1,6 @@
 // Import of dependencies
 const Company = require('../models/Company');
-const { response } = require('express')
+const { response } = require('express');
 const { sequelize } = require('../database/connection');
 const { getUuid } = require('../helpers/uuidGenerator');
 const { opusLog } = require('../helpers/log4js');

@@ -9,7 +9,11 @@
         "compnayPluralUp": "Empresas",
         "companyPluralLow": "empresas",
         "typeUp": "Tipo",
-        "typeLow": "tipo"
+        "typeLow": "tipo",
+        "personUp": "Persona",
+        "personLow": "persona",
+        "personPluralUp": "Personas",
+        "personPluralLow": "personas"
     },
     {
         "language": "en",
@@ -22,6 +26,10 @@
         "compnayPluralUp": "Companies",
         "companyPluralLow": "companies",
         "typeUp": "Type",
-        "typeLow": "type"
+        "typeLow": "type",
+        "personUp": "Person",
+        "personLow": "person",
+        "personPluralUp": "People",
+        "personPluralLow": "people"
     }
 ]

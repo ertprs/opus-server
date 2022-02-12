@@ -143,9 +143,10 @@ CREATE TABLE "person"(
  "uuid" Character varying(10) NOT NULL,
  "names" Character varying(200) NOT NULL,
  "lastNames" Character varying(200) NOT NULL,
- "dni" Character varying(13) NOT NULL,
- "phone" Character varying(15),
- "mobilePhone" Character varying(10) NOT NULL,
+ "dni" Character varying(100) NOT NULL,
+ "phone" Character varying(100),
+ "mobilePhone" Character varying(100) NOT NULL,
+ "email" Character varying(100),
  "address" Text,
  "reference" Text,
  "birthdate" Date,
@@ -171,6 +172,8 @@ COMMENT ON COLUMN "person"."dni" IS 'Unique dni number'
 COMMENT ON COLUMN "person"."phone" IS 'Phone number may includes an extension'
 ;
 COMMENT ON COLUMN "person"."mobilePhone" IS 'Mobile phone this field is mandatory'
+;
+COMMENT ON COLUMN "person"."email" IS 'Email address for billing'
 ;
 COMMENT ON COLUMN "person"."address" IS 'Residence address'
 ;

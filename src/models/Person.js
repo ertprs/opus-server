@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 const { sequelize } = require('../database/connection');
 
-const Role = sequelize.define('role', {
-    roleId: {
+const Person = sequelize.define('person', {
+    personId: {
         type: Sequelize.INTEGER,
         primaryKey: true
     },
@@ -11,18 +11,34 @@ const Role = sequelize.define('role', {
         allowNull: false,
         unique: true
     },
-    name: {
+    names: {
+        type: Sequelize.STRING(200),
+        allowNull: false
+    },
+    lastNames: {
+        type: Sequelize.STRING(200),
+        allowNull: false
+    },
+    dni: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true
+    },
+    mobilePhone: {
         type: Sequelize.STRING(100),
         allowNull: false
     },
-    description: {
-        type: Sequelize.TEXT,
-        allowNull: false
+    email: {
+        type: Sequelize.STRING(100),
     },
-    elevation: {
-        type: Sequelize.SMALLINT,
-        allowNull: false,
-        defaultValue: 0
+    address: {
+        type: Sequelize.TEXT,
+    },
+    reference: {
+        type: Sequelize.TEXT
+    },
+    birthdate: {
+        type: Sequelize.DATE
     },
     details: {
         type: Sequelize.TEXT
@@ -31,9 +47,6 @@ const Role = sequelize.define('role', {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: true
-    },
-    options: {
-        type: Sequelize.JSON
     },
     createdAt: {
         type: Sequelize.DATE,
@@ -51,4 +64,4 @@ const Role = sequelize.define('role', {
     freezeTableName: true
 });
 
-module.exports = Role;
+module.exports = Person;

@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { createPerson } = require('../controllers/person');
+const { createPerson, getActivePeople } = require('../controllers/person');
 const { fieldValidation } = require('../middlewares/fieldValidation');
 
 const router = Router();
@@ -15,5 +15,13 @@ router.post('/', [
         fieldValidation
     ],
     createPerson);
+
+// Get active people
+// GET: /api/{v}/person
+router.get('/', getActivePeople);
+
+// Get all people for administration
+// GET: /api/{v}/person
+router.get('/all', getActivePeople);
 
 module.exports = router;

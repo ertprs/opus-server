@@ -1,7 +1,7 @@
 {
     "name": "opus",
     "version": "1.0.0",
-    "description": "Opus software para gestión de servicios empresariale",
+    "description": "Opus software para gestión de servicios empresariales",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",

@@ -31,7 +31,15 @@
         "okDeletMale": " eliminado satisfactoriamente",
         "okDeleteFemale": " eliminada satisfactoriamente",
         "okDeleteMalePlural": " eliminados satisfactoriamente",
-        "okDeleteFemalePlural": " eliminadas satisfactoriamente"
+        "okDeleteFemalePlural": " eliminadas satisfactoriamente",
+        "alreadyExists": " ya existe en en el sistema",
+        "authenticationError": "No se puede autenticar el usuario",
+        "authenticationOK": "Usuario autenticado satisfactoriamente",
+        "authenticationWrong": "Correo electrónico o contraseña incorrectos",
+        "authenticationRenew": "Autenticación renovada satisfactoriamente",
+        "forbiddenRoleAction": "Privilegios no permitidos para su usuario",
+        "noToken": "No se ha enviado información de autenticación",
+        "invalidToken": "Error en la información de autenticación"
     },
     {
         "language": "en",
@@ -66,6 +74,14 @@
         "okDeletMale": " deleted successfully",
         "okDeleteFemale": " deleted successfully",
         "okDeleteMalePlural": " deleted successfully",
-        "okDeleteFemalePlural": " deleted successfully"
+        "okDeleteFemalePlural": " deleted successfully",
+        "alreadyExists": " already exists in the system",
+        "authenticationError": "Unable to authenticate user",
+        "authenticationOK": "User authenticated successfully",
+        "authenticationWrong": "Wrong email or password",
+        "authenticationRenew": "Authentication renewed successfully",
+        "forbiddenRoleAction": "Forbidden privileges for your user",
+        "noToken": "Authentication information hast not been sent",
+        "invalidToken": "Authentication information error"
     }
 ]

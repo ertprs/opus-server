@@ -21,7 +21,7 @@ CREATE TABLE "user"(
  "details" Text,
  "isActive" Boolean DEFAULT true NOT NULL,
  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedat" Timestamp with time zone,
+ "updatedAt" Timestamp with time zone,
  "deletedAt" Timestamp with time zone,
  "roleId" Integer,
  "companyId" Integer,

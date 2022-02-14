@@ -13,7 +13,11 @@
         "personUp": "Persona",
         "personLow": "persona",
         "personPluralUp": "Personas",
-        "personPluralLow": "personas"
+        "personPluralLow": "personas",
+        "userUp": "Usuario",
+        "userLow": "usuario",
+        "userPluralUp": "Usuarios",
+        "userPluralLow": "usuarios"
     },
     {
         "language": "en",
@@ -30,6 +34,10 @@
         "personUp": "Person",
         "personLow": "person",
         "personPluralUp": "People",
-        "personPluralLow": "people"
+        "personPluralLow": "people",
+        "userUp": "User",
+        "userLow": "user",
+        "userPluralUp": "Users",
+        "userPluralLow": "users"
     }
 ]

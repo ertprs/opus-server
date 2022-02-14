@@ -12,6 +12,7 @@ const { selectLanguage } = require('../helpers/selectLanguage');
 const { trimSpaces, onlyNumbers } = require('../helpers/stringHandling');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 
+// Create a new person
 const createPerson = async(req, res = response) => {
     const {
         names,
@@ -98,7 +99,7 @@ const getActivePeople = async(req, res = response) => {
                 peopleToReturn[i] = {
                     personId: peopleFinded[i].personId,
                     uuid: peopleFinded[i].uuid,
-                    names: opusDecrypt(peopleFinded[i].name),
+                    names: opusDecrypt(peopleFinded[i].names),
                     lastNames: opusDecrypt(peopleFinded[i].lastNames),
                     dni: opusDecrypt(peopleFinded[i].dni),
                     mobilePhone: opusDecrypt(peopleFinded[i].mobilePhone),
@@ -155,7 +156,7 @@ const getAllPeople = async(req, res = response) => {
                 peopleToReturn[i] = {
                     personId: peopleFinded[i].personId,
                     uuid: peopleFinded[i].uuid,
-                    names: opusDecrypt(peopleFinded[i].name),
+                    names: opusDecrypt(peopleFinded[i].names),
                     lastNames: opusDecrypt(peopleFinded[i].lastNames),
                     dni: opusDecrypt(peopleFinded[i].dni),
                     mobilePhone: opusDecrypt(peopleFinded[i].mobilePhone),
@@ -197,11 +198,67 @@ const getAllPeople = async(req, res = response) => {
 
 // Update a person
 const updatePerson = async(req, res = response) => {
-
+    const personId = req.params.id;
+    const {
+        names,
+        lastNames,
+        dni,
+        phone,
+        mobilePhone,
+        email,
+        address,
+        reference,
+        birthdate,
+        details
+    } = req.body;
+    try {
+        const findPerson = await Person.findOne({
+            where: {
+                personId,
+                isActive: true
+            }
+        });
+        if (findPerson === undefined || findPerson === null) {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].personLow
+            });
+        }
+        // Prepare object for update
+        let personToUpdate = {
+            names: names? opusCrypt(names) : undefined,
+            lastNames: lastNames? opusCrypt(lastNames) : undefined,
+            dni: dni? opusCrypt(onlyNumbers(trimSpaces(dni))) : undefined,
+            phone: phone ? opusCrypt(phone) : undefined,
+            mobilePhone: mobilePhone ? opusCrypt(onlyNumbers(trimSpaces(mobilePhone))) : undefined,
+            email: email ? opusCrypt(email) : undefined,
+            address: address ? opusCrypt(address) : undefined,
+            reference: reference ? opusCrypt(reference) : undefined,
+            birthdate,
+            details,
+            updatedAt: sequelize.NOW
+        }
+        await Person.update(personToUpdate, {
+            where: {
+                personId
+            }
+        });
+        return res.status(200).json({
+            ok: true,
+            msg: entityFile[index].personUp + messageFile[index].okUpdateFemale
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Updating person [${ dni }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorUpdating + entityFile[index].personLow,
+            error
+        });
+    }
 }
 
 // Change person status
-// Change the status of a company
 const changePersonStatus = async(req, res = response) => {
     const personId = req.params.id;
     const type = req.query.type || false;
@@ -275,10 +332,41 @@ const changePersonStatus = async(req, res = response) => {
     }
 }
 
-// Delete a person
+// Physical deletion of a person
+const deletePerson = async(req, res = response) => {
+    const personId = req.params.id;
+    try {
+        const deletedPerson = await Person.destroy({
+            where: {
+                personId
+            }
+        });
+        if (deletedPerson > 0) {
+            return res.status(200).json({
+                ok: true,
+                msg: entityFile[index].personUp + messageFile[index].okDeleteFemale
+            });
+        } else {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].personLow
+            })
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Deleting person [${ personId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorDeleting + entityFile[index].personLow
+        });
+    }
+}
 
 module.exports = {
     createPerson,
     getActivePeople,
-    getAllPeople
+    getAllPeople,
+    updatePerson,
+    changePersonStatus,
+    deletePerson
 }

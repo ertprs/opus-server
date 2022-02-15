@@ -21,7 +21,7 @@
         "okUpdateFemalePlura": " actualizadas satisfactoriamente",
         "notParam": " es un parámetro requerido",
         "invalidParam": " no es un parámetro válido",
-        "errorChangeStatus": "Error al cambiar de estado",
+        "errorChangeStatus": "Error al cambiar de estado ",
         "changeStatusActionOnMale": " activado satisfactoriamente",
         "changeStatusActionOnFemale": " activada satisfactoriamente",
         "changeStatusActionOffMale": " inactivado satisfactoriamente",
@@ -37,9 +37,12 @@
         "authenticationOK": "Usuario autenticado satisfactoriamente",
         "authenticationWrong": "Correo electrónico o contraseña incorrectos",
         "authenticationRenew": "Autenticación renovada satisfactoriamente",
-        "forbiddenRoleAction": "Privilegios no permitidos para su usuario",
+        "forbiddenRoleAction": "Acción no permitida para su usuario",
         "noToken": "No se ha enviado información de autenticación",
-        "invalidToken": "Error en la información de autenticación"
+        "invalidToken": "Error en la información de autenticación",
+        "changePasswordError": "Error al actualizar contraseña ",
+        "changePasswordOk": "Contraseña actualizada satisfactoriamente",
+        "passwordMismatch": "Su contraseña actual no es correcta"
     },
     {
         "language": "en",
@@ -80,8 +83,11 @@
         "authenticationOK": "User authenticated successfully",
         "authenticationWrong": "Wrong email or password",
         "authenticationRenew": "Authentication renewed successfully",
-        "forbiddenRoleAction": "Forbidden privileges for your user",
+        "forbiddenRoleAction": "Forbidden action for your user",
         "noToken": "Authentication information hast not been sent",
-        "invalidToken": "Authentication information error"
+        "invalidToken": "Authentication information error",
+        "changePasswordError": "Error while changing password ",
+        "changePasswordOk": "Password changed successfully",
+        "passwordMismatch": "Your current password is not correct"
     }
 ]

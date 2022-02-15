@@ -10,9 +10,9 @@ const { selectLanguage } = require('../helpers/selectLanguage');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 const messageFile = require('../data/messages.json');
 
-const authenticateUser = async( req, res = response ) => {
+const authenticateUser = async(req, res = response) => {
     const { email, password } = req.body;
-    
+
     try {
         // Find the user by the provided email
         let user = await User.findOne({
@@ -21,21 +21,21 @@ const authenticateUser = async( req, res = response ) => {
                 isActive: true
             }
         });
-        if ( !user ) {
+        if (!user) {
             return res.status(400).json({
                 ok: false,
                 msg: messageFile[index].authenticationWrong
             })
         }
         // Compare and validate passwords
-        const validatedPassword = bcrypt.compareSync( password, user.password );
-        if ( !validatedPassword ) {
+        const validatedPassword = bcrypt.compareSync(password, user.password);
+        if (!validatedPassword) {
             return res.status(400).json({
                 ok: false,
                 msg: messageFile[index].authenticationWrong
             });
         }
-        user.password = `\m/(◣_◢)\m/`;
+        user.password = 'ლ(ಠ益ಠლ)╯';
         const token = await jwtGenerate(user);
         return res.status(200).json({
             ok: true,

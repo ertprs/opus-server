@@ -2,6 +2,8 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { createCompany, getActiveCompanies, getAllCompanies, updateCompany, changeCompanyStatus, deleteCompany } = require('../controllers/company');
 const { fieldValidation } = require('../middlewares/fieldValidation');
+const { tokenValidation } = require('../middlewares/jwtValidation');
+const { adminValidation, userValidation } = require('../middlewares/roleValidation');
 
 const router = Router();
 
@@ -9,31 +11,35 @@ const router = Router();
 // POST: /api/{v}/company
 router.post('/', [
     check('name', 'Name is requiered').not().isEmpty(),
-    fieldValidation
+    fieldValidation,
+    tokenValidation,
+    adminValidation
 ], createCompany);
 
 // Get active companies
 // GET: /api/{v}/role
-router.get('/', getActiveCompanies);
+router.get('/', [tokenValidation, userValidation], getActiveCompanies);
 
 // Get all companies for administration
 // GET: /api/{v}/role
-router.get('/all', getAllCompanies);
+router.get('/all', [tokenValidation, adminValidation], getAllCompanies);
 
 // Updated a company
 // PUT: /api/{v}/company/:id
 router.put('/:id', [
     check('name', 'Name is requiered').not().isEmpty(),
-    fieldValidation
+    fieldValidation,
+    tokenValidation,
+    adminValidation
 ], updateCompany);
 
 // Change the status of a compnay
 // PUT: /api/{v}/company/status/:id?type
-router.put('/status/:id', changeCompanyStatus);
+router.put('/status/:id', [tokenValidation, adminValidation], changeCompanyStatus);
 
 // Delete physically a company
 // DELETE: /api/{v}/company/:id
-router.delete('/:id', deleteCompany);
+router.delete('/:id', [tokenValidation, adminValidation], deleteCompany);
 
 
 module.exports = router;

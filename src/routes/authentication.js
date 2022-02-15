@@ -19,7 +19,6 @@ router.post('/login', [
 
 // Renew authentication values
 // GET: /api/{v}/auth/renew
-router.get('/renew', tokenValidation ,renewToken);
-
+router.get('/renew', tokenValidation, renewToken);
 
 module.exports = router;

@@ -28,14 +28,14 @@ const createUser = async(req, res = response) => {
     let uuid = getUuid();
     // Validate if the role was sent or assign a default role
     let role;
-    if( roleId === undefined || roleId === null || roleId === '' ) {
+    if (roleId === undefined || roleId === null || roleId === '') {
         try {
             const dbRole = await Role.findOne({
                 where: {
                     name: 'User'
                 }
             });
-            if( dbRole ) {
+            if (dbRole) {
                 role = dbRole.roleId;
             } else {
                 role = 0;
@@ -61,7 +61,7 @@ const createUser = async(req, res = response) => {
                 email
             }
         });
-        if( user ) {
+        if (user) {
             return res.status(400).json({
                 ok: false,
                 msg: entityFile[index].userUp + messageFile[index].alreadyExists
@@ -70,8 +70,8 @@ const createUser = async(req, res = response) => {
 
         // Code password to crypt
         const salt = bcrypt.genSaltSync();
-        let cipherPass = bcrypt.hashSync( password, salt );
-        
+        let cipherPass = bcrypt.hashSync(password, salt);
+
         // Store the new user
         const newUser = await User.create({
             uuid,
@@ -91,7 +91,7 @@ const createUser = async(req, res = response) => {
                 userId: newUser.userId,
                 uuid: newUser.uuid,
                 email: newUser.email,
-                password: '**********',
+                password: 'ლ(ಠ益ಠლ)╯',
                 isActive: newUser.isActive,
                 createdAt: newUser.createdAt,
                 roleId: newUser.roleId,
@@ -117,10 +117,9 @@ const getActiveUsers = async(req, res = response) => {
     const offset = req.query.offset || 0;
     try {
         const activeUsers = await User.findAndCountAll({
-            include: [
-                {
+            include: [{
                     model: Person,
-                    attributes: [ 'uuid', 'names', 'lastNames', 'dni', 'email', 'mobilePhone']
+                    attributes: ['uuid', 'names', 'lastNames', 'dni', 'email', 'mobilePhone']
                 },
                 {
                     model: Company,
@@ -128,7 +127,7 @@ const getActiveUsers = async(req, res = response) => {
                 },
                 {
                     model: Role,
-                    attributes: ['uuid', 'name' ]
+                    attributes: ['uuid', 'name']
                 }
             ],
             where: {
@@ -136,7 +135,7 @@ const getActiveUsers = async(req, res = response) => {
             },
             limit,
             offset
-        }); 
+        });
         if (activeUsers.count > 0) {
             let usersFinded = activeUsers.rows;
             let userToReturn = [];
@@ -144,7 +143,7 @@ const getActiveUsers = async(req, res = response) => {
             for (let i = 0; i < usersFinded.length; i++) {
                 userToReturn[i] = {
                     userId: usersFinded[i].userId,
-                    uuid: usersFinded[i].uuid ,
+                    uuid: usersFinded[i].uuid,
                     nick: usersFinded[i].nick,
                     email: usersFinded[i].email,
                     password: usersFinded[i].password,
@@ -206,10 +205,9 @@ const getAllUsers = async(req, res = response) => {
     const offset = req.query.offset || 0;
     try {
         const activeUsers = await User.findAndCountAll({
-            include: [
-                {
+            include: [{
                     model: Person,
-                    attributes: [ 'uuid', 'names', 'lastNames', 'dni', 'email', 'mobilePhone']
+                    attributes: ['uuid', 'names', 'lastNames', 'dni', 'email', 'mobilePhone']
                 },
                 {
                     model: Company,
@@ -217,7 +215,7 @@ const getAllUsers = async(req, res = response) => {
                 },
                 {
                     model: Role,
-                    attributes: ['uuid', 'name' ]
+                    attributes: ['uuid', 'name']
                 }
             ],
             limit,
@@ -230,7 +228,7 @@ const getAllUsers = async(req, res = response) => {
             for (let i = 0; i < usersFinded.length; i++) {
                 userToReturn[i] = {
                     userId: usersFinded[i].userId,
-                    uuid: usersFinded[i].uuid ,
+                    uuid: usersFinded[i].uuid,
                     nick: usersFinded[i].nick,
                     email: usersFinded[i].email,
                     password: usersFinded[i].password,
@@ -287,7 +285,7 @@ const getAllUsers = async(req, res = response) => {
 }
 
 // Update an user
-const updateUser = async( req, res = response ) => {
+const updateUser = async(req, res = response) => {
     const userId = req.params.id;
     const {
         email,
@@ -351,7 +349,7 @@ const changeUserStatus = async(req, res = response) => {
 
     if (type.toLowerCase() === 'on') {
         activation = true;
-        action = entityFile[index].userUp + messageFile[index].changeStatusActionOnFemale
+        action = entityFile[index].userUp + messageFile[index].changeStatusActionOnMale
         changeAction = {
             isActive: true,
             updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
@@ -360,7 +358,7 @@ const changeUserStatus = async(req, res = response) => {
     } else {
         if (type.toLowerCase() === 'off') {
             activation = false;
-            action = entityFile[index].userUp + messageFile[index].changeStatusActionOffFemale
+            action = entityFile[index].userUp + messageFile[index].changeStatusActionOffMale
             changeAction = {
                 isActive: false,
                 updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
@@ -408,10 +406,93 @@ const changeUserStatus = async(req, res = response) => {
     }
 }
 
+// Physical deletion of an user
+const deleteUser = async(req, res = response) => {
+    const userId = req.params.id;
+    try {
+        const deletedUser = await User.destroy({
+            where: {
+                userId
+            }
+        });
+        if (deletedUser > 0) {
+            return res.status(200).json({
+                ok: true,
+                msg: entityFile[index].userUp + messageFile[index].okDeletMale
+            });
+        } else {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].userLow
+            })
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Deleting user [${ userId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorDeleting + entityFile[index].userLow
+        });
+    }
+}
+
+// Change user's password
+const changePassword = async(req, res = response) => {
+    const userId = req.user.userId;
+    const {
+        password,
+        oldPassword
+    } = req.body;
+    try {
+        // Find the user's information
+        const userData = await User.findOne({
+            where: {
+                userId
+            }
+        });
+        const oldUserPassword = userData.password;
+        // Code password to crypt
+        console.log('oldDB:', oldUserPassword);
+        console.log('old', oldPassword);
+        const validatedPassword = bcrypt.compareSync(oldPassword, oldUserPassword);
+        if (!validatedPassword) {
+            return res.status(403).json({
+                ok: false,
+                msg: messageFile[index].passwordMismatch
+            });
+        }
+        const salt = bcrypt.genSaltSync();
+        let cipherPass = bcrypt.hashSync(password, salt);
+        console.log(cipherPass);
+        await User.update({
+            password: cipherPass
+        }, {
+            where: {
+                userId
+            }
+        });
+
+        return res.status(200).json({
+            ok: true,
+            msg: messageFile[index].changePasswordOk
+        });
+
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Changing password [${ userId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].changePasswordError
+        });
+    }
+}
+
 module.exports = {
     createUser,
     getActiveUsers,
     getAllUsers,
     updateUser,
-    changeUserStatus
+    changeUserStatus,
+    deleteUser,
+    changePassword
 }

@@ -27,8 +27,6 @@ router.get('/all', [tokenValidation, adminValidation], getAllCompanies);
 // Updated a company
 // PUT: /api/{v}/company/:id
 router.put('/:id', [
-    check('name', 'Name is requiered').not().isEmpty(),
-    fieldValidation,
     tokenValidation,
     adminValidation
 ], updateCompany);

@@ -44,7 +44,9 @@
         "changePasswordOk": "Contraseña actualizada satisfactoriamente",
         "passwordMismatch": "Su contraseña actual no es correcta",
         "logoutError": "Error al cerrar la sesión",
-        "logoutOk": "Sesión cerrada satisfactoriamente"
+        "logoutOk": "Sesión cerrada satisfactoriamente",
+        "registerInCompany": " por favor registrelo en su empresa",
+        "mandatoryMissing": "Campo(s) obligatorios no han sido enviados"
     },
     {
         "language": "en",
@@ -92,6 +94,8 @@
         "changePasswordOk": "Password changed successfully",
         "passwordMismatch": "Your current password is not correct",
         "logoutError": "Error while logging out",
-        "logoutOk": "Logged out successfully"
+        "logoutOk": "Logged out successfully",
+        "registerInCompany": " please register it in your company",
+        "mandatoryMissing": "Mandatory fields are not sent"
     }
 ]

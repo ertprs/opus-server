@@ -71,5 +71,6 @@ const validation = async(array, roleId) => {
 module.exports = {
     adminValidation,
     companyValidation,
-    userValidation
+    userValidation,
+    getRoleName
 }

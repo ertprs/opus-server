@@ -14,6 +14,8 @@ const { selectLanguage } = require('../helpers/selectLanguage');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 const messageFile = require('../data/messages.json');
 const entityFile = require('../data/entities.json');
+const { getRoleName } = require('../middlewares/roleValidation');
+const { lowerCase } = require('../helpers/stringHandling');
 
 const createClient = async(req, res = response) => {
     const {
@@ -223,9 +225,176 @@ const getAllClients = async(req, res = response) => {
     }
 }
 
+// Update the information of a client
+const updateClient = async(req, res = response) => {
+    const companyId = req.user.companyId;
+    const roleId = req.user.roleId;
+    const clientId = req.params.id;
+    const {
+        details,
+        hasWhatsapp,
+        hasEmail,
+        needsSurvey,
+        personId,
+        servicesNumber
+    } = req.body;
+    let searchCondition = {};
+
+    if( personId === '' || personId === 0 ) {
+        return res.status(400).json({
+            ok: false,
+            msg: messageFile[index].mandatoryMissing
+        });
+    }
+
+    try {
+        // If the user is an administrator, cannot validate the company
+        const roleName = await getRoleName(roleId);
+        if( lowerCase(roleName) !== lowerCase(process.env.USR_ADMIN) ) {
+            searchCondition = {
+                clientId,
+                companyId
+            }
+        } else {
+            searchCondition = {
+                clientId
+            }
+        }
+        const findClient = await Client.findOne({where: searchCondition});
+        if( findClient === undefined || findClient === null ) {
+            return res.status(400).json({
+                ok: false,
+                msg: entityFile[index].clientUp + messageFile[index].notFound + messageFile[index].registerInCompany
+            });
+        } 
+        // Update the client information
+        await Client.update({
+            details,
+            hasWhatsapp,
+            hasEmail,
+            needsSurvey,
+            personId,
+            servicesNumber,
+            updatedAt: sequelize.literal('CURRENT_TIMESTAMP')
+        }, {
+            where: searchCondition
+        });
+        return res.status(200).json({
+            ok: true,
+            msg: entityFile[index].clientUp + messageFile[index].okUpdateMale
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Updating client [${ clientId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorUpdating + entityFile[index].clientLow,
+            error
+        });
+    }
+}
+
+// Change the status of a client
+const changeClientStatus = async(req, res = response) => {
+    const clientId = req.params.id;
+    const type = req.query.type || false;
+    const roleId = req.user.roleId;
+    const companyId = req.user.companyId;
+    let changeAction;
+    let action;
+    let activation;
+    let searchCondition;
+
+
+    if (!type) {
+        return res.status(400).json({
+            ok: false,
+            msg: entityFile[index].typeUp + messageFile[index].notParam
+        });
+    }
+
+    if (type.toLowerCase() === 'on') {
+        activation = true;
+        action = entityFile[index].clientUp + messageFile[index].changeStatusActionOnMale
+        changeAction = {
+            isActive: true,
+            updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
+            deletedAt: null
+        }
+    } else {
+        if (type.toLowerCase() === 'off') {
+            activation = false;
+            action = entityFile[index].clientUp + messageFile[index].changeStatusActionOffMale
+            changeAction = {
+                isActive: false,
+                updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
+                deletedAt: sequelize.literal('CURRENT_TIMESTAMP')
+            }
+        } else {
+            return res.status(400).json({
+                ok: false,
+                msg: type + messageFile[index].invalidParam
+            });
+        }
+    }
+    try {
+        const roleName = await getRoleName(roleId);
+        if( lowerCase(roleName) !== lowerCase(process.env.USR_ADMIN) ) {
+            searchCondition = {
+                clientId,
+                companyId,
+                isActive: !activation
+            }
+        } else {
+            searchCondition = {
+                clientId,
+                isActive: !activation
+            }
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Changing client status  [${ clientId }/${ activation }] role not found: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: `${ messageFile[index].errorChangeStatus } ${ entityFile[index].roleLow }`
+        });
+    }
+    try {
+        const findClient = await Client.findOne({
+            where: searchCondition
+        });
+        if (!findClient) {
+            return res.status(404).json({
+                ok: false,
+                msg: `${ messageFile[index].notFound }${ entityFile[index].clientLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
+            });
+        }
+        await Client.update(
+            changeAction, {
+                where: {
+                    clientId
+                }
+            }
+        );
+
+        return res.status(200).json({
+            ok: true,
+            msg: action,
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Changing client status  [${ clientId }/${ activation }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorChangeStatus
+        });
+    }
+}
 
 module.exports = {
     createClient,
     getActiveClients,
-    getAllClients
+    getAllClients,
+    updateClient,
+    changeClientStatus,
 }

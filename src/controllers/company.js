@@ -134,6 +134,14 @@ const updateCompany = async(req, res = response) => {
         details,
         options
     } = req.body;
+
+    if(name === '') {
+        return res.status(400).json({
+            ok: false,
+            msg: messageFile[index].mandatoryMissing
+        });
+    }
+
     try {
         const findCompany = await Company.findOne({
             where: {

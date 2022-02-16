@@ -9,6 +9,9 @@ const { opusLog } = require('../helpers/log4js');
 const { selectLanguage } = require('../helpers/selectLanguage');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 const messageFile = require('../data/messages.json');
+const Session = require('../models/Session');
+const { getUuid } = require('../helpers/uuidGenerator');
+const { sequelize } = require('../database/connection');
 
 const authenticateUser = async(req, res = response) => {
     const { email, password } = req.body;
@@ -37,12 +40,49 @@ const authenticateUser = async(req, res = response) => {
         }
         user.password = 'ლ(ಠ益ಠლ)╯';
         const token = await jwtGenerate(user);
+
+        // Find the a session for the user
+        let session;
+        const findSession = await Session.findOne({
+            where: {
+                userId: user.userId
+            }
+        });
+
+        if( !findSession ) {
+            // Registering user's session
+            const registerSession = await Session.create({
+                uuid: getUuid(),
+                opts: token,
+                userId: user.userId,
+                details: `+ Session created from ${ req.socket.remoteAddress }`
+            },{
+                fields: ['uuid', 'opts', 'userId', 'details'],
+                returning: ['sessionId', 'uuid', 'opts', 'userId', 'isRenewed', 'activeSince', 'details']
+            });
+            session = { uuid: registerSession.uuid, sessionId: registerSession.sessionId };
+        } else {
+            // Actualiza la sesión actual
+            await Session.update({
+                isRenewed: true,
+                renewedSince: sequelize.literal('CURRENT_TIMESTAMP'),
+                details: findSession.details + `\n- Renewed session from ${ req.socket.remoteAddress }`,
+                opts: token
+            }, {
+                where: {
+                    sessionId: findSession.sessionId
+                }
+            });
+            session = { uuid: findSession.uuid, sessionId: findSession.sessionId };
+        }
+
         return res.status(200).json({
             ok: true,
             msg: messageFile[index].authenticationOK,
             user,
+            session,
             token
-        })
+        });
 
     } catch (error) {
         console.log('Error:', error);

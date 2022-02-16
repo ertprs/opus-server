@@ -277,8 +277,8 @@ CREATE TABLE "client"(
   (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
  "uuid" Character varying(10) NOT NULL,
  "servicesNumber" Smallint DEFAULT 0 NOT NULL,
- "whatsapp" Character varying(9) NOT NULL,
- "email" Character varying(100),
+ "hasWhatsapp" Boolean DEFAULT false NOT NULL,
+ "hasEmail" Boolean DEFAULT false,
  "details" Text,
  "isActive" Boolean DEFAULT true NOT NULL,
  "needsSurvey" Boolean DEFAULT true NOT NULL,
@@ -297,9 +297,11 @@ COMMENT ON COLUMN "client"."uuid" IS 'Backend autogenerate unique identificator'
 ;
 COMMENT ON COLUMN "client"."servicesNumber" IS 'Number of services or number of repairs'
 ;
-COMMENT ON COLUMN "client"."whatsapp" IS 'Unique number of contact for the client'
+COMMENT ON COLUMN "client"."hasWhatsapp" IS 'true: client has whatsapp application
+false: client has not whatssapp application'
 ;
-COMMENT ON COLUMN "client"."email" IS 'Email address for the cliente'
+COMMENT ON COLUMN "client"."hasEmail" IS 'true: client has email address
+false: client has not email address'
 ;
 COMMENT ON COLUMN "client"."details" IS 'Additional details for the client'
 ;

@@ -42,25 +42,23 @@ const authenticateUser = async(req, res = response) => {
         const token = await jwtGenerate(user);
 
         // Find the a session for the user
-        let session;
         const findSession = await Session.findOne({
             where: {
                 userId: user.userId
             }
         });
 
-        if( !findSession ) {
+        if (!findSession) {
             // Registering user's session
             const registerSession = await Session.create({
                 uuid: getUuid(),
                 opts: token,
                 userId: user.userId,
                 details: `+ Session created from ${ req.socket.remoteAddress }`
-            },{
+            }, {
                 fields: ['uuid', 'opts', 'userId', 'details'],
                 returning: ['sessionId', 'uuid', 'opts', 'userId', 'isRenewed', 'activeSince', 'details']
             });
-            session = { uuid: registerSession.uuid, sessionId: registerSession.sessionId };
         } else {
             // Actualiza la sesión actual
             await Session.update({
@@ -73,14 +71,12 @@ const authenticateUser = async(req, res = response) => {
                     sessionId: findSession.sessionId
                 }
             });
-            session = { uuid: findSession.uuid, sessionId: findSession.sessionId };
         }
 
         return res.status(200).json({
             ok: true,
             msg: messageFile[index].authenticationOK,
             user,
-            session,
             token
         });
 
@@ -90,12 +86,36 @@ const authenticateUser = async(req, res = response) => {
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].authenticationError
-        })
+        });
     }
 }
 
 const renewToken = async(req, res = response) => {
     const token = await jwtGenerate(req.user);
+    // Find the user session for update
+    try {
+        const findSession = await Session.findOne({
+            where: {
+                userId: req.user.userId
+            }
+        });
+        if (findSession) {
+            // Update the session of the user
+            await Session.update({
+                isRenewed: true,
+                renewedSince: sequelize.literal('CURRENT_TIMESTAMP'),
+                details: findSession.details + `\n- Renewed session by token from ${ req.socket.remoteAddress }`,
+                opts: token
+            }, {
+                where: {
+                    userId: req.user.userId
+                }
+            });
+        }
+    } catch (error) {
+        console.log('Error while managing session:', error);
+        opusLog(`Error managing session renewing [${ req.user.userId }]`, 'error');
+    }
     return res.status(200).json({
         ok: true,
         msg: messageFile[index].authenticationRenew,
@@ -104,7 +124,39 @@ const renewToken = async(req, res = response) => {
     });
 }
 
+// Logout for close the session
+const logoutUser = async(req, res = response) => {
+    const userId = req.user.userId;
+    // Find the session
+    try {
+        const findSession = await Session.findOne({
+            while: {
+                userId
+            }
+        });
+        if (findSession) {
+            await Session.destroy({
+                where: {
+                    userId
+                }
+            });
+        }
+        return res.status(200).json({
+            ok: true,
+            msg: messageFile[index].logoutOk
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Logging out user [${ userId }]: ${ error }`);
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].logoutError
+        })
+    }
+}
+
 module.exports = {
     authenticateUser,
-    renewToken
+    renewToken,
+    logoutUser
 }

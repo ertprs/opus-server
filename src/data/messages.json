@@ -42,7 +42,9 @@
         "invalidToken": "Error en la información de autenticación",
         "changePasswordError": "Error al actualizar contraseña ",
         "changePasswordOk": "Contraseña actualizada satisfactoriamente",
-        "passwordMismatch": "Su contraseña actual no es correcta"
+        "passwordMismatch": "Su contraseña actual no es correcta",
+        "logoutError": "Error al cerrar la sesión",
+        "logoutOk": "Sesión cerrada satisfactoriamente"
     },
     {
         "language": "en",
@@ -88,6 +90,8 @@
         "invalidToken": "Authentication information error",
         "changePasswordError": "Error while changing password ",
         "changePasswordOk": "Password changed successfully",
-        "passwordMismatch": "Your current password is not correct"
+        "passwordMismatch": "Your current password is not correct",
+        "logoutError": "Error while logging out",
+        "logoutOk": "Logged out successfully"
     }
 ]

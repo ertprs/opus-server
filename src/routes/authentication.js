@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { authenticateUser, renewToken } = require('../controllers/authentication');
+const { authenticateUser, renewToken, logoutUser } = require('../controllers/authentication');
 const { fieldValidation } = require('../middlewares/fieldValidation');
 const { tokenValidation } = require('../middlewares/jwtValidation');
 
@@ -20,5 +20,9 @@ router.post('/login', [
 // Renew authentication values
 // GET: /api/{v}/auth/renew
 router.get('/renew', tokenValidation, renewToken);
+
+// Logging out a user
+// GET: /api/{v}/auth/logout
+router.get('/logout', tokenValidation, logoutUser);
 
 module.exports = router;

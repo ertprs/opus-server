@@ -452,8 +452,6 @@ const changePassword = async(req, res = response) => {
         });
         const oldUserPassword = userData.password;
         // Code password to crypt
-        console.log('oldDB:', oldUserPassword);
-        console.log('old', oldPassword);
         const validatedPassword = bcrypt.compareSync(oldPassword, oldUserPassword);
         if (!validatedPassword) {
             return res.status(403).json({
@@ -463,7 +461,6 @@ const changePassword = async(req, res = response) => {
         }
         const salt = bcrypt.genSaltSync();
         let cipherPass = bcrypt.hashSync(password, salt);
-        console.log(cipherPass);
         await User.update({
             password: cipherPass
         }, {

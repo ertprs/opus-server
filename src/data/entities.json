@@ -17,7 +17,11 @@
         "userUp": "Usuario",
         "userLow": "usuario",
         "userPluralUp": "Usuarios",
-        "userPluralLow": "usuarios"
+        "userPluralLow": "usuarios",
+        "clientUp": "Cliente",
+        "clientLow": "cliente",
+        "clientPluralUp": "Clientes",
+        "clientPluralLow": "clientes"
     },
     {
         "language": "en",
@@ -38,6 +42,10 @@
         "userUp": "User",
         "userLow": "user",
         "userPluralUp": "Users",
-        "userPluralLow": "users"
+        "userPluralLow": "users",
+        "clientUp": "Client",
+        "clientLow": "client",
+        "clientPluralUp": "Clients",
+        "clientPluralLow": "clients"
     }
 ]

@@ -17,6 +17,7 @@ const entityFile = require('../data/entities.json');
 const { getRoleName } = require('../middlewares/roleValidation');
 const { lowerCase } = require('../helpers/stringHandling');
 
+// Create a new client (If client exists, don't create)
 const createClient = async(req, res = response) => {
     const {
         details,
@@ -240,7 +241,7 @@ const updateClient = async(req, res = response) => {
     } = req.body;
     let searchCondition = {};
 
-    if( personId === '' || personId === 0 ) {
+    if (personId === '' || personId === 0) {
         return res.status(400).json({
             ok: false,
             msg: messageFile[index].mandatoryMissing
@@ -250,7 +251,7 @@ const updateClient = async(req, res = response) => {
     try {
         // If the user is an administrator, cannot validate the company
         const roleName = await getRoleName(roleId);
-        if( lowerCase(roleName) !== lowerCase(process.env.USR_ADMIN) ) {
+        if (lowerCase(roleName) !== lowerCase(process.env.USR_ADMIN)) {
             searchCondition = {
                 clientId,
                 companyId
@@ -260,13 +261,13 @@ const updateClient = async(req, res = response) => {
                 clientId
             }
         }
-        const findClient = await Client.findOne({where: searchCondition});
-        if( findClient === undefined || findClient === null ) {
+        const findClient = await Client.findOne({ where: searchCondition });
+        if (findClient === undefined || findClient === null) {
             return res.status(400).json({
                 ok: false,
                 msg: entityFile[index].clientUp + messageFile[index].notFound + messageFile[index].registerInCompany
             });
-        } 
+        }
         // Update the client information
         await Client.update({
             details,
@@ -339,7 +340,7 @@ const changeClientStatus = async(req, res = response) => {
     }
     try {
         const roleName = await getRoleName(roleId);
-        if( lowerCase(roleName) !== lowerCase(process.env.USR_ADMIN) ) {
+        if (lowerCase(roleName) !== lowerCase(process.env.USR_ADMIN)) {
             searchCondition = {
                 clientId,
                 companyId,
@@ -391,10 +392,41 @@ const changeClientStatus = async(req, res = response) => {
     }
 }
 
+// Delete phisically a client
+const deleteClient = async(req, res = reponse) => {
+    const clientId = req.params.id;
+    try {
+        const deletedClient = await Client.destroy({
+            where: {
+                clientId
+            }
+        });
+        if (deletedClient > 0) {
+            return res.status(200).json({
+                ok: true,
+                msg: entityFile[index].clientUp + messageFile[index].okDeletMale
+            });
+        } else {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].clientLow
+            })
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Deleting client [${ clientId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorDeleting + entityFile[index].clientLow
+        });
+    }
+}
+
 module.exports = {
     createClient,
     getActiveClients,
     getAllClients,
     updateClient,
     changeClientStatus,
+    deleteClient
 }

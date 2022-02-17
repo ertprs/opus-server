@@ -21,7 +21,11 @@
         "clientUp": "Cliente",
         "clientLow": "cliente",
         "clientPluralUp": "Clientes",
-        "clientPluralLow": "clientes"
+        "clientPluralLow": "clientes",
+        "sericeUp": "Servicio",
+        "serviceLow": "servicio",
+        "servicePluralUp": "Servicios",
+        "servicePluralLow": "servicios"
     },
     {
         "language": "en",
@@ -46,6 +50,10 @@
         "clientUp": "Client",
         "clientLow": "client",
         "clientPluralUp": "Clients",
-        "clientPluralLow": "clients"
+        "clientPluralLow": "clients",
+        "sericeUp": "Service",
+        "serviceLow": "service",
+        "servicePluralUp": "Services",
+        "servicePluralLow": "services"
     }
 ]

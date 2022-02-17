@@ -15,6 +15,7 @@ const userRoute = require('./user');
 const authRoute = require('./authentication');
 const clientRoute = require('./client');
 const serviceRoute = require('./service');
+const brandRoute = require('./brand');
 
 app.use(`/api/${ version }/role`, roleRoute);
 app.use(`/api/${ version }/company`, companyRoute);
@@ -23,5 +24,6 @@ app.use(`/api/${ version }/user`, userRoute);
 app.use(`/api/${ version }/auth`, authRoute);
 app.use(`/api/${ version }/client`, clientRoute);
 app.use(`/api/${ version }/service`, serviceRoute);
+app.use(`/api/${ version }/brand`, brandRoute);
 
 module.exports = app;

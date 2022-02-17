@@ -22,10 +22,14 @@
         "clientLow": "cliente",
         "clientPluralUp": "Clientes",
         "clientPluralLow": "clientes",
-        "sericeUp": "Servicio",
+        "serviceUp": "Servicio",
         "serviceLow": "servicio",
         "servicePluralUp": "Servicios",
-        "servicePluralLow": "servicios"
+        "servicePluralLow": "servicios",
+        "brandUp": "Marca",
+        "brandLow": "marca",
+        "brandPluralUp": "Marcas",
+        "brandPluralLow": "marcas"
     },
     {
         "language": "en",
@@ -51,9 +55,13 @@
         "clientLow": "client",
         "clientPluralUp": "Clients",
         "clientPluralLow": "clients",
-        "sericeUp": "Service",
+        "serviceUp": "Service",
         "serviceLow": "service",
         "servicePluralUp": "Services",
-        "servicePluralLow": "services"
+        "servicePluralLow": "services",
+        "brandUp": "Brand",
+        "brandLow": "brand",
+        "brandPluralUp": "Brands",
+        "brandPluralLow": "brands"
     }
 ]

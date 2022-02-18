@@ -29,7 +29,15 @@
         "brandUp": "Marca",
         "brandLow": "marca",
         "brandPluralUp": "Marcas",
-        "brandPluralLow": "marcas"
+        "brandPluralLow": "marcas",
+        "modelUp": "Modelo",
+        "modelLow": "modelo",
+        "modelPluralUp": "Modelos",
+        "modelPluralLow": "modelos",
+        "serviceStatusUp": "Estado de ervicio",
+        "serviceStatusLow": "estado de servicio",
+        "serviceStatusPluralUp": "Estados de servicio",
+        "serviceStatusPluralLow": "estados de servicio"
     },
     {
         "language": "en",
@@ -62,6 +70,14 @@
         "brandUp": "Brand",
         "brandLow": "brand",
         "brandPluralUp": "Brands",
-        "brandPluralLow": "brands"
+        "brandPluralLow": "brands",
+        "modelUp": "Model",
+        "modelLow": "model",
+        "modelPluralUp": "Models",
+        "modelPluralLow": "models",
+        "serviceStatusUp": "Service status",
+        "serviceStatusLow": "service status",
+        "serviceStatusPluralUp": "Service status",
+        "serviceStatusPluralLow": "Serice status"
     }
 ]

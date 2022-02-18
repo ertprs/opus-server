@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 const { sequelize } = require('../database/connection');
-const Brand = require('./Brand');
+const Company = require('./Company');
 
-const Model = sequelize.define('model', {
-    modelId: {
+const ServiceStatus = sequelize.define('serviceStatus', {
+    statusId: {
         type: Sequelize.INTEGER,
         primaryKey: true
     },
@@ -17,20 +17,17 @@ const Model = sequelize.define('model', {
         allowNull: false,
         unique: true
     },
-    description: {
+    details: {
         type: Sequelize.TEXT
     },
-    shortName: {
-        type: Sequelize.STRING(50)
+    order: {
+        type: Sequelize.SMALLINT
     },
-    techSpecification: {
-        type: Sequelize.TEXT
+    cost: {
+        type: Sequelize.NUMBER
     },
-    img: {
-        type: Sequelize.STRING(400)
-    },
-    url: {
-        type: Sequelize.STRING(400)
+    options: {
+        type:Sequelize.JSON
     },
     isActive: {
         type: Sequelize.BOOLEAN,
@@ -48,19 +45,19 @@ const Model = sequelize.define('model', {
     deletedAt: {
         type: Sequelize.DATE
     },
-    brandId: {
+    companyId: {
         type: Sequelize.INTEGER,
         references: {
-            model: 'brand',
-            key: 'brandId'
+            model: 'company',
+            key: 'companyId'
         }
-    },
+    }
 }, {
     timestamps: false,
     freezeTableName: true
 });
 
-Brand.hasMany(Model, { foreignKey: { name: 'brandId', targetKey: 'brandId' } });
-Model.belongsTo(Brand, { foreignKey: { name: 'brandId', targetKey: 'brandId' } });
+Company.hasMany(ServiceStatus, { foreignKey: { name: 'companyId', targetKey: 'companyId' } });
+ServiceStatus.belongsTo(Company, { foreignKey: { name: 'companyId', targetKey: 'companyId' } });
 
-module.exports = Model;
+module.exports = ServiceStatus;

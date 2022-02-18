@@ -67,7 +67,7 @@ const getActiveBrands = async(req, res = response) => {
         } else {
             return res.status(404).json({
                 ok: false,
-                msg: messageFile[index].notFound + entityFile[index].companyPluralLow
+                msg: messageFile[index].notFound + entityFile[index].brandPluralLow
             });
         }
     } catch (error) {
@@ -75,7 +75,7 @@ const getActiveBrands = async(req, res = response) => {
         opusLog(`Getting active brands: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorGetting + entityFile[index].companyPluralLow,
+            msg: messageFile[index].errorGetting + entityFile[index].brandPluralLow,
             error
         });
     }
@@ -100,7 +100,7 @@ const getAllBrands = async(req, res = response) => {
         } else {
             return res.status(404).json({
                 ok: false,
-                msg: messageFile[index].notFound + entityFile[index].companyPluralLow
+                msg: messageFile[index].notFound + entityFile[index].brandPluralLow
             });
         }
     } catch (error) {
@@ -108,7 +108,7 @@ const getAllBrands = async(req, res = response) => {
         opusLog(`Getting all brands: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorGetting + entityFile[index].companyPluralLow,
+            msg: messageFile[index].errorGetting + entityFile[index].brandPluralLow,
             error
         });
     }

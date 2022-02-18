@@ -567,8 +567,8 @@ CREATE TABLE "model"(
  "techSpecification" Text NOT NULL,
  "img" Character varying(400),
  "url" Character varying(400),
- "isActive" Boolean NOT NULL,
- "createdAt" Timestamp with time zone NOT NULL,
+ "isActive" Boolean DEFAULT true NOT NULL,
+ "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
  "updatedAt" Timestamp with time zone,
  "deletedAt" Timestamp with time zone,
  "brandId" Integer

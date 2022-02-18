@@ -39,6 +39,6 @@ router.put('/status/:id', [tokenValidation, userValidation], changeClientStatus)
 
 // Delete physically a client
 // DELETE: /api/{v}/client/:id
-router.delete('/:id', deleteClient);
+router.delete('/:id', [tokenValidation, adminValidation], deleteClient);
 
 module.exports = router;

@@ -564,7 +564,7 @@ CREATE TABLE "model"(
  "name" Character varying(150) NOT NULL,
  "description" Text,
  "shortName" Character varying(50),
- "techEspecification" Text NOT NULL,
+ "techSpecification" Text NOT NULL,
  "img" Character varying(400),
  "url" Character varying(400),
  "isActive" Boolean NOT NULL,
@@ -586,7 +586,7 @@ COMMENT ON COLUMN "model"."description" IS 'Description for the model'
 ;
 COMMENT ON COLUMN "model"."shortName" IS 'If the model has a short name'
 ;
-COMMENT ON COLUMN "model"."techEspecification" IS 'Technical specification for the model'
+COMMENT ON COLUMN "model"."techSpecification" IS 'Technical specification for the model'
 ;
 COMMENT ON COLUMN "model"."img" IS 'URL for the image'
 ;

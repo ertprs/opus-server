@@ -18,6 +18,7 @@ const serviceRoute = require('./service');
 const brandRoute = require('./brand');
 const modelRoute = require('./model');
 const serviceStatus = require('./serviceStatus');
+const serviceOrder = require('./serviceOrder');
 
 app.use(`/api/${ version }/role`, roleRoute);
 app.use(`/api/${ version }/company`, companyRoute);
@@ -29,5 +30,6 @@ app.use(`/api/${ version }/service`, serviceRoute);
 app.use(`/api/${ version }/brand`, brandRoute);
 app.use(`/api/${ version }/model`, modelRoute);
 app.use(`/api/${ version }/status`, serviceStatus);
+app.use(`/api/${ version }/order`, serviceOrder);
 
 module.exports = app;

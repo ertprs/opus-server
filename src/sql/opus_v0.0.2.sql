@@ -1,34 +1,34 @@
 /*
 Created: 3/2/2022
-Modified: 8/2/2022
+Modified: 21/2/2022
 Project: opus
 Model: PostgreSQL 10
 Database: PostgreSQL 10
 */
 
-
 -- Create tables section -------------------------------------------------
 
 -- Table user
 
-CREATE TABLE "user"(
- "userId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "nick" Character varying(100),
- "email" Character varying(100) NOT NULL,
- "password" Character varying(200) NOT NULL,
- "details" Text,
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "roleId" Integer,
- "companyId" Integer,
- "personId" Integer
+CREATE TABLE "user"
+(
+  "userId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "nick" Character varying(100),
+  "email" Character varying(100) NOT NULL,
+  "password" Character varying(200) NOT NULL,
+  "details" Text,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "roleId" Integer,
+  "companyId" Integer,
+  "personId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "user"."userId" IS 'Unique user identificator'
 ;
@@ -53,8 +53,6 @@ COMMENT ON COLUMN "user"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "user"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Create indexes for table user
-
 CREATE INDEX "user_role_IX" ON "user" ("roleId")
 ;
 
@@ -63,8 +61,6 @@ CREATE INDEX "user_company_IX" ON "user" ("companyId")
 
 CREATE INDEX "user_person_IX" ON "user" ("personId")
 ;
-
--- Add keys for table user
 
 ALTER TABLE "user" ADD CONSTRAINT "PK_user" PRIMARY KEY ("userId")
 ;
@@ -80,22 +76,23 @@ ALTER TABLE "user" ADD CONSTRAINT "email" UNIQUE ("email")
 
 -- Table role
 
-CREATE TABLE "role"(
- "roleId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "name" Character varying(100) NOT NULL,
- "description" Text NOT NULL,
- "elevation" Smallint DEFAULT 0 NOT NULL,
- "details" Text,
- "isActive" Boolean DEFAULT true NOT NULL,
- "options" Json,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone
+CREATE TABLE "role"
+(
+  "roleId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "name" Character varying(100) NOT NULL,
+  "description" Text NOT NULL,
+  "elevation" Smallint DEFAULT 0 NOT NULL,
+  "details" Text,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "options" Json,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "role"."roleId" IS 'Role identification'
 ;
@@ -121,8 +118,6 @@ COMMENT ON COLUMN "role"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "role"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Add keys for table role
-
 ALTER TABLE "role" ADD CONSTRAINT "PK_role" PRIMARY KEY ("roleId")
 ;
 
@@ -137,27 +132,28 @@ ALTER TABLE "role" ADD CONSTRAINT "roleUuid" UNIQUE ("uuid")
 
 -- Table person
 
-CREATE TABLE "person"(
- "personId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "names" Character varying(200) NOT NULL,
- "lastNames" Character varying(200) NOT NULL,
- "dni" Character varying(100) NOT NULL,
- "phone" Character varying(100),
- "mobilePhone" Character varying(100) NOT NULL,
- "email" Character varying(100),
- "address" Text,
- "reference" Text,
- "birthdate" Date,
- "details" Text,
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone
+CREATE TABLE "person"
+(
+  "personId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "names" Character varying(200) NOT NULL,
+  "lastNames" Character varying(200) NOT NULL,
+  "dni" Character varying(100) NOT NULL,
+  "phone" Character varying(100),
+  "mobilePhone" Character varying(100) NOT NULL,
+  "email" Character varying(100),
+  "address" Text,
+  "reference" Text,
+  "birthdate" Date,
+  "details" Text,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "person"."personId" IS 'Unique person identificator'
 ;
@@ -193,8 +189,6 @@ COMMENT ON COLUMN "person"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "person"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Add keys for table person
-
 ALTER TABLE "person" ADD CONSTRAINT "PK_person" PRIMARY KEY ("personId")
 ;
 
@@ -212,24 +206,25 @@ ALTER TABLE "person" ADD CONSTRAINT "personUuid" UNIQUE ("uuid")
 
 -- Table company
 
-CREATE TABLE "company"(
- "companyId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "name" Character varying(400) NOT NULL,
- "shortName" Character varying(100),
- "logo" Character varying(500),
- "slogan" Character varying(500),
- "details" Text,
- "isActive" Boolean DEFAULT true NOT NULL,
- "description" Text,
- "createdAt" Timestamp DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp,
- "deletedAt" Timestamp,
- "options" Json
+CREATE TABLE "company"
+(
+  "companyId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "name" Character varying(400) NOT NULL,
+  "shortName" Character varying(100),
+  "logo" Character varying(500),
+  "slogan" Character varying(500),
+  "details" Text,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "description" Text,
+  "createdAt" Timestamp DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp,
+  "deletedAt" Timestamp,
+  "options" Json
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "company"."companyId" IS 'Company unique identificator'
 ;
@@ -259,8 +254,6 @@ COMMENT ON COLUMN "company"."deletedAt" IS 'deletedTimestamp'
 COMMENT ON COLUMN "company"."options" IS 'Options or configuration JSON file'
 ;
 
--- Add keys for table company
-
 ALTER TABLE "company" ADD CONSTRAINT "PK_company" PRIMARY KEY ("companyId")
 ;
 
@@ -272,24 +265,25 @@ ALTER TABLE "company" ADD CONSTRAINT "companyUuid" UNIQUE ("uuid")
 
 -- Table client
 
-CREATE TABLE "client"(
- "clientId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "servicesNumber" Smallint DEFAULT 0 NOT NULL,
- "hasWhatsapp" Boolean DEFAULT false NOT NULL,
- "hasEmail" Boolean DEFAULT false,
- "details" Text,
- "isActive" Boolean DEFAULT true NOT NULL,
- "needsSurvey" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "companyId" Integer,
- "personId" Integer
+CREATE TABLE "client"
+(
+  "clientId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "servicesNumber" Smallint DEFAULT 0 NOT NULL,
+  "hasWhatsapp" Boolean DEFAULT false NOT NULL,
+  "hasEmail" Boolean DEFAULT false,
+  "details" Text,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "needsSurvey" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "companyId" Integer,
+  "personId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "client"."clientId" IS 'Cliente unique identificator'
 ;
@@ -318,15 +312,11 @@ COMMENT ON COLUMN "client"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "client"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Create indexes for table client
-
 CREATE INDEX "client_company_IX" ON "client" ("companyId")
 ;
 
 CREATE INDEX "client_person_IX" ON "client" ("personId")
 ;
-
--- Add keys for table client
 
 ALTER TABLE "client" ADD CONSTRAINT "PK_client" PRIMARY KEY ("clientId")
 ;
@@ -339,21 +329,22 @@ ALTER TABLE "client" ADD CONSTRAINT "clientUuid" UNIQUE ("uuid")
 
 -- Table service
 
-CREATE TABLE "service"(
- "serviceId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "name" Character varying(200) NOT NULL,
- "detail" Text,
- "price" Numeric,
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "companyId" Integer
+CREATE TABLE "service"
+(
+  "serviceId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "name" Character varying(200) NOT NULL,
+  "detail" Text,
+  "price" Numeric,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "companyId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "service"."serviceId" IS 'Unique identificator for a service'
 ;
@@ -375,12 +366,8 @@ COMMENT ON COLUMN "service"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "service"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Create indexes for table service
-
 CREATE INDEX "serice_company_IX" ON "service" ("companyId")
 ;
-
--- Add keys for table service
 
 ALTER TABLE "service" ADD CONSTRAINT "PK_service" PRIMARY KEY ("serviceId")
 ;
@@ -393,34 +380,35 @@ ALTER TABLE "service" ADD CONSTRAINT "serviceUuid" UNIQUE ("uuid")
 
 -- Table serviceOrder
 
-CREATE TABLE "serviceOrder"(
- "serviceOrderId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "number" Numeric NOT NULL,
- "observation" Text NOT NULL,
- "lockPatron" Character varying(100),
- "isFinished" Boolean,
- "receptionDate" Date DEFAULT current_date NOT NULL,
- "receptionHour" Time DEFAULT current_time NOT NULL,
- "serialNumber" Character varying(80),
- "advancedPayment" Numeric DEFAULT 0 NOT NULL,
- "color" Character varying(20),
- "isRepair" Boolean NOT NULL,
- "techSpecifications" Character varying(400),
- "problemDescription" Text NOT NULL,
- "lockPass" Character varying(200),
- "hasSurvey" Boolean DEFAULT false NOT NULL,
- "isActive" Boolean,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updateAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "clientId" Integer,
- "modelId" Integer,
- "statusId" Integer
+CREATE TABLE "serviceOrder"
+(
+  "serviceOrderId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "number" Numeric NOT NULL,
+  "observation" Text NOT NULL,
+  "lockPatron" Character varying(100),
+  "isFinished" Boolean,
+  "receptionDate" Date DEFAULT current_date NOT NULL,
+  "receptionHour" Time DEFAULT current_time NOT NULL,
+  "serialNumber" Character varying(80),
+  "advancedPayment" Numeric DEFAULT 0 NOT NULL,
+  "color" Character varying(20),
+  "isRepair" Boolean NOT NULL,
+  "techSpecifications" Character varying(400),
+  "problemDescription" Text NOT NULL,
+  "lockPass" Character varying(200),
+  "hasSurvey" Boolean DEFAULT false NOT NULL,
+  "isActive" Boolean,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updateAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "clientId" Integer,
+  "modelId" Integer,
+  "statusId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "serviceOrder"."serviceOrderId" IS 'Unique autogenerated identification'
 ;
@@ -467,8 +455,6 @@ COMMENT ON COLUMN "serviceOrder"."updateAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "serviceOrder"."deletedAt" IS 'Deleted timestamp'
 ;
 
--- Create indexes for table serviceOrder
-
 CREATE INDEX "order_client_IX" ON "serviceOrder" ("clientId")
 ;
 
@@ -477,8 +463,6 @@ CREATE INDEX "order_model_IX" ON "serviceOrder" ("modelId")
 
 CREATE INDEX "order_status_IX" ON "serviceOrder" ("statusId")
 ;
-
--- Add keys for table serviceOrder
 
 ALTER TABLE "serviceOrder" ADD CONSTRAINT "PK_serviceOrder" PRIMARY KEY ("serviceOrderId")
 ;
@@ -494,21 +478,22 @@ ALTER TABLE "serviceOrder" ADD CONSTRAINT "orderUuid" UNIQUE ("uuid")
 
 -- Table brand
 
-CREATE TABLE "brand"(
- "brandId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "name" Character varying(100) NOT NULL,
- "shortName" Character varying(50),
- "description" Text,
- "url" Character varying(400),
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone
+CREATE TABLE "brand"
+(
+  "brandId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "name" Character varying(100) NOT NULL,
+  "shortName" Character varying(50),
+  "description" Text,
+  "url" Character varying(400),
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "brand"."brandId" IS 'Brand''s unique identificator'
 ;
@@ -532,8 +517,6 @@ COMMENT ON COLUMN "brand"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "brand"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Add keys for table brand
-
 ALTER TABLE "brand" ADD CONSTRAINT "PK_brand" PRIMARY KEY ("brandId")
 ;
 
@@ -548,24 +531,25 @@ ALTER TABLE "brand" ADD CONSTRAINT "brandUuid" UNIQUE ("uuid")
 
 -- Table model
 
-CREATE TABLE "model"(
- "modelId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
- "uuid" Character varying(10) NOT NULL,
- "name" Character varying(150) NOT NULL,
- "description" Text,
- "shortName" Character varying(50),
- "techSpecification" Text NOT NULL,
- "img" Character varying(400),
- "url" Character varying(400),
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "brandId" Integer
+CREATE TABLE "model"
+(
+  "modelId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "name" Character varying(150) NOT NULL,
+  "description" Text,
+  "shortName" Character varying(50),
+  "techSpecification" Text NOT NULL,
+  "img" Character varying(400),
+  "url" Character varying(400),
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "brandId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "model"."modelId" IS 'Unique utogenerated identificator for a model'
 ;
@@ -593,12 +577,8 @@ COMMENT ON COLUMN "model"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "model"."deletedAt" IS 'Deleted timestamp'
 ;
 
--- Create indexes for table model
-
 CREATE INDEX "model_brand_IX" ON "model" ("brandId")
 ;
-
--- Add keys for table model
 
 ALTER TABLE "model" ADD CONSTRAINT "PK_model" PRIMARY KEY ("modelId")
 ;
@@ -614,21 +594,23 @@ ALTER TABLE "model" ADD CONSTRAINT "modelUuid" UNIQUE ("uuid")
 
 -- Table serviceDetail
 
-CREATE TABLE "serviceDetail"(
- "serviceDetailId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "cost" Numeric DEFAULT 0 NOT NULL,
- "balance" Numeric,
- "details" Text,
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "serviceId" Integer
+CREATE TABLE "serviceDetail"
+(
+  "serviceDetailId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "cost" Numeric DEFAULT 0 NOT NULL,
+  "balance" Numeric,
+  "details" Text,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "serviceId" Integer,
+  "serviceOrderId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "serviceDetail"."serviceDetailId" IS 'Unique autogenerated identificator'
 ;
@@ -650,43 +632,41 @@ COMMENT ON COLUMN "serviceDetail"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "serviceDetail"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Add keys for table serviceDetail
-
-ALTER TABLE "serviceDetail" ADD CONSTRAINT "PK_serviceDetail" PRIMARY KEY ("serviceDetailId")
-;
-
-ALTER TABLE "serviceDetail" ADD CONSTRAINT "serviceDetailId" UNIQUE ("serviceDetailId")
-;
-
-ALTER TABLE "serviceDetail" ADD CONSTRAINT "uuid" UNIQUE ("uuid")
-;
-
--- Create indexes for table serviceDetail
-
 CREATE INDEX "details_service_IX" ON "serviceDetail" ("serviceId")
 ;
 
 CREATE INDEX "detail_order_IX" ON "serviceDetail" ("serviceOrderId")
 ;
+
+ALTER TABLE "serviceDetail" ADD CONSTRAINT "PK_serviceDetail" PRIMARY KEY ("serviceDetailId")
+;
+
+ALTER TABLE "serviceDetail" ADD CONSTRAINT "serviceDetailsId" UNIQUE ("serviceDetailId")
+;
+
+ALTER TABLE "serviceDetail" ADD CONSTRAINT "uuid" UNIQUE ("uuid")
+;
+
 -- Table serviceStatus
 
-CREATE TABLE "serviceStatus"(
- "statusId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "name" Character varying(200) NOT NULL,
- "details" Text,
- "order" Smallint,
- "cost" Numeric DEFAULT 0,
- "options" Json,
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "companyId" Integer
+CREATE TABLE "serviceStatus"
+(
+  "statusId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "name" Character varying(200) NOT NULL,
+  "details" Text,
+  "order" Smallint,
+  "cost" Numeric DEFAULT 0,
+  "options" Json,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "companyId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "serviceStatus"."statusId" IS 'Unique autogenerated identificator for the status'
 ;
@@ -712,12 +692,8 @@ COMMENT ON COLUMN "serviceStatus"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "serviceStatus"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Create indexes for table serviceStatus
-
 CREATE INDEX "serviceStatus_company_IX" ON "serviceStatus" ("companyId")
 ;
-
--- Add keys for table serviceStatus
 
 ALTER TABLE "serviceStatus" ADD CONSTRAINT "PK_serviceStatus" PRIMARY KEY ("statusId")
 ;
@@ -725,7 +701,7 @@ ALTER TABLE "serviceStatus" ADD CONSTRAINT "PK_serviceStatus" PRIMARY KEY ("stat
 ALTER TABLE "serviceStatus" ADD CONSTRAINT "statusId" UNIQUE ("statusId")
 ;
 
-ALTER TABLE "serviceStatus" ADD CONSTRAINT "statusName" UNIQUE ("name", "companyId")
+ALTER TABLE "serviceStatus" ADD CONSTRAINT "statusName" UNIQUE ("name")
 ;
 
 ALTER TABLE "serviceStatus" ADD CONSTRAINT "statusUuid" UNIQUE ("uuid")
@@ -733,19 +709,20 @@ ALTER TABLE "serviceStatus" ADD CONSTRAINT "statusUuid" UNIQUE ("uuid")
 
 -- Table statusChange
 
-CREATE TABLE "statusChange"(
- "statusChangesId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "details" Text,
- "uuid" Character varying(10) NOT NULL,
- "sysDetail" Text,
- "statusId" Integer,
- "serviceOrderId" Integer,
- "userId" Integer
+CREATE TABLE "statusChange"
+(
+  "statusChangesId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "details" Text,
+  "uuid" Character varying(10) NOT NULL,
+  "sysDetail" Text,
+  "statusId" Integer,
+  "serviceOrderId" Integer,
+  "userId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "statusChange"."statusChangesId" IS 'Unique autogenerated identificator'
 ;
@@ -758,8 +735,6 @@ COMMENT ON COLUMN "statusChange"."uuid" IS 'Unique backend autogenerated identif
 COMMENT ON COLUMN "statusChange"."sysDetail" IS 'Backend sent details'
 ;
 
--- Create indexes for table statusChange
-
 CREATE INDEX "statusChange_status_IX" ON "statusChange" ("statusId")
 ;
 
@@ -768,8 +743,6 @@ CREATE INDEX "statusChange_order_IX" ON "statusChange" ("serviceOrderId")
 
 CREATE INDEX "statusChange_user_IX" ON "statusChange" ("userId")
 ;
-
--- Add keys for table statusChange
 
 ALTER TABLE "statusChange" ADD CONSTRAINT "PK_statusChange" PRIMARY KEY ("statusChangesId")
 ;
@@ -782,24 +755,25 @@ ALTER TABLE "statusChange" ADD CONSTRAINT "changeUuid" UNIQUE ("uuid")
 
 -- Table survey
 
-CREATE TABLE "survey"(
- "surveyId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "name" Character varying(200) NOT NULL,
- "details" Text,
- "startDate" Date DEFAULT current_date NOT NULL,
- "endDate" Date,
- "startHour" Time NOT NULL,
- "endHour" Time NOT NULL,
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "companyId" Integer
+CREATE TABLE "survey"
+(
+  "surveyId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "name" Character varying(200) NOT NULL,
+  "details" Text,
+  "startDate" Date DEFAULT current_date NOT NULL,
+  "endDate" Date,
+  "startHour" Time NOT NULL,
+  "endHour" Time NOT NULL,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "companyId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "survey"."surveyId" IS 'Unique autogenerated identificator for a survey'
 ;
@@ -827,12 +801,8 @@ COMMENT ON COLUMN "survey"."updatedAt" IS 'Updated timestamp'
 COMMENT ON COLUMN "survey"."deletedAt" IS 'Deletion timestamp'
 ;
 
--- Create indexes for table survey
-
 CREATE INDEX "survey_company_IX" ON "survey" ("companyId")
 ;
-
--- Add keys for table survey
 
 ALTER TABLE "survey" ADD CONSTRAINT "PK_survey" PRIMARY KEY ("surveyId")
 ;
@@ -845,20 +815,21 @@ ALTER TABLE "survey" ADD CONSTRAINT "surveyUuid" UNIQUE ("uuid")
 
 -- Table question
 
-CREATE TABLE "question"(
- "questionId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "uuid" Character varying(10) NOT NULL,
- "question" Text NOT NULL,
- "answer" Text[] NOT NULL,
- "isActive" Boolean DEFAULT true NOT NULL,
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "details" Text
+CREATE TABLE "question"
+(
+  "questionId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "uuid" Character varying(10) NOT NULL,
+  "question" Text NOT NULL,
+  "answer" Text[] NOT NULL,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "details" Text
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "question"."questionId" IS 'Unique autogenerated identificator '
 ;
@@ -880,8 +851,6 @@ COMMENT ON COLUMN "question"."deletedAt" IS 'Deletion timestamp'
 COMMENT ON COLUMN "question"."details" IS 'Additional details if it applies'
 ;
 
--- Add keys for table question
-
 ALTER TABLE "question" ADD CONSTRAINT "PK_question" PRIMARY KEY ("questionId")
 ;
 
@@ -893,18 +862,19 @@ ALTER TABLE "question" ADD CONSTRAINT "questionUuid" UNIQUE ("uuid")
 
 -- Table surveyQuestion
 
-CREATE TABLE "surveyQuestion"(
- "surveyQuestionsId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY 
-  (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1 ),
- "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
- "updatedAt" Timestamp with time zone,
- "deletedAt" Timestamp with time zone,
- "isActive" Boolean DEFAULT true NOT NULL,
- "surveyId" Integer,
- "questionId" Integer
+CREATE TABLE "surveyQuestion"
+(
+  "surveyQuestionId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
+  "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
+  "updatedAt" Timestamp with time zone,
+  "deletedAt" Timestamp with time zone,
+  "isActive" Boolean DEFAULT true NOT NULL,
+  "surveyId" Integer,
+  "questionId" Integer
 )
 WITH (
- autovacuum_enabled=true)
+  autovacuum_enabled=true)
 ;
 COMMENT ON COLUMN "surveyQuestion"."surveyQuestionId" IS 'Unique autogenerated identificator'
 ;
@@ -918,44 +888,38 @@ COMMENT ON COLUMN "surveyQuestion"."isActive" IS 'true: active survey - question
 false: inactive survey - question join'
 ;
 
--- Create indexes for table surveyQuestion
-
 CREATE INDEX "surveQuestion_survey_IX" ON "surveyQuestion" ("surveyId")
 ;
 
 CREATE INDEX "surveyQuestion_question_IX" ON "surveyQuestion" ("questionId")
 ;
 
--- Add keys for table surveyQuestion
-
 ALTER TABLE "surveyQuestion" ADD CONSTRAINT "PK_surveyQuestion" PRIMARY KEY ("surveyQuestionId")
 ;
 
-ALTER TABLE "surveyQuestion" ADD CONSTRAINT "surveyQuestionId" UNIQUE ("surveyQuestionId")
+ALTER TABLE "surveyQuestion" ADD CONSTRAINT "surveyQuestionsId" UNIQUE ("surveyQuestionId")
 ;
 
 -- Table session
 
 CREATE TABLE "session"
 (
-  "sessionId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
-    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1),
-  "uuid" Character varying(10) NOT NULL,
   "userId" Integer NOT NULL,
+  "uuid" Character varying(10) NOT NULL,
   "opts" Text NOT NULL,
   "isRenewed" Boolean DEFAULT false NOT NULL,
   "activeSince" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
   "renewedSince" Timestamp with time zone,
-  "details" Text
+  "details" Text,
+  "sessionId" Integer NOT NULL GENERATED ALWAYS AS IDENTITY
+    (INCREMENT BY 1 NO MINVALUE NO MAXVALUE START WITH 1 CACHE 1)
 )
 WITH (
   autovacuum_enabled=true)
 ;
-COMMENT ON COLUMN "session"."sessionId" IS 'Autogenerated identificator for the session'
+COMMENT ON COLUMN "session"."userId" IS 'User identificator'
 ;
 COMMENT ON COLUMN "session"."uuid" IS 'Unique backend autogenerated identificator'
-;
-COMMENT ON COLUMN "session"."userId" IS 'User identificator'
 ;
 COMMENT ON COLUMN "session"."opts" IS 'Token information'
 ;
@@ -967,6 +931,8 @@ COMMENT ON COLUMN "session"."activeSince" IS 'Timestamp for the login date and t
 COMMENT ON COLUMN "session"."renewedSince" IS 'Timestamp for the renewed date and time'
 ;
 COMMENT ON COLUMN "session"."details" IS 'Information or additional details'
+;
+COMMENT ON COLUMN "session"."sessionId" IS 'Autogenerated identificator for the session'
 ;
 
 CREATE INDEX "session_user_IX" ON "session" ("userId")
@@ -981,70 +947,165 @@ ALTER TABLE "session" ADD CONSTRAINT "sessionId" UNIQUE ("sessionId")
 ALTER TABLE "session" ADD CONSTRAINT "sessionUuid" UNIQUE ("uuid")
 ;
 
+-- Create foreign keys (relationships) section -------------------------------------------------
 
--- Create foreign keys (relationships) section ------------------------------------------------- 
-
-ALTER TABLE "user" ADD CONSTRAINT "usr_has_rol_FL" FOREIGN KEY ("roleId") REFERENCES "role" ("roleId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "user"
+  ADD CONSTRAINT "usr_has_rol_FL"
+    FOREIGN KEY ("roleId")
+    REFERENCES "role" ("roleId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "user" ADD CONSTRAINT "usr_belongs_cpn_FK" FOREIGN KEY ("companyId") REFERENCES "company" ("companyId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "user"
+  ADD CONSTRAINT "usr_belongs_cpn_FK"
+    FOREIGN KEY ("companyId")
+    REFERENCES "company" ("companyId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "user" ADD CONSTRAINT "usr_is_per_FK" FOREIGN KEY ("personId") REFERENCES "person" ("personId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "user"
+  ADD CONSTRAINT "usr_is_per_FK"
+    FOREIGN KEY ("personId")
+    REFERENCES "person" ("personId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "client" ADD CONSTRAINT "cmp_has_cli_FK" FOREIGN KEY ("companyId") REFERENCES "company" ("companyId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "client"
+  ADD CONSTRAINT "cmp_has_cli_FK"
+    FOREIGN KEY ("companyId")
+    REFERENCES "company" ("companyId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "client" ADD CONSTRAINT "cli_is_per_FK" FOREIGN KEY ("personId") REFERENCES "person" ("personId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "client"
+  ADD CONSTRAINT "cli_is_per_FK"
+    FOREIGN KEY ("personId")
+    REFERENCES "person" ("personId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "service" ADD CONSTRAINT "cmp_has_ser_FK" FOREIGN KEY ("companyId") REFERENCES "company" ("companyId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "service"
+  ADD CONSTRAINT "cmp_has_ser_FK"
+    FOREIGN KEY ("companyId")
+    REFERENCES "company" ("companyId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceOrder" ADD CONSTRAINT "ord_has_srv_FK" FOREIGN KEY ("serviceId") REFERENCES "service" ("serviceId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "serviceOrder"
+  ADD CONSTRAINT "ord_isFor_cli_FK"
+    FOREIGN KEY ("clientId")
+    REFERENCES "client" ("clientId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceOrder" ADD CONSTRAINT "ord_isFor_cli_FK" FOREIGN KEY ("clientId") REFERENCES "client" ("clientId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "model"
+  ADD CONSTRAINT "bra_has_mod_FK"
+    FOREIGN KEY ("brandId")
+    REFERENCES "brand" ("brandId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceOrder" ADD CONSTRAINT "ord_has_bra_FK" FOREIGN KEY ("brandId") REFERENCES "brand" ("brandId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "serviceOrder"
+  ADD CONSTRAINT "ser_has_mod_FK"
+    FOREIGN KEY ("modelId")
+    REFERENCES "model" ("modelId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "model" ADD CONSTRAINT "bra_has_mod_FK" FOREIGN KEY ("brandId") REFERENCES "brand" ("brandId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "serviceStatus"
+  ADD CONSTRAINT "cpn_has_sst_FK"
+    FOREIGN KEY ("companyId")
+    REFERENCES "company" ("companyId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceOrder" ADD CONSTRAINT "ser_has_mod_FK" FOREIGN KEY ("modelId") REFERENCES "model" ("modelId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "serviceOrder"
+  ADD CONSTRAINT "ser_has_sst_FK"
+    FOREIGN KEY ("statusId")
+    REFERENCES "serviceStatus" ("statusId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceOrder" ADD CONSTRAINT "ser_has_det_FK" FOREIGN KEY ("serviceDetailId") REFERENCES "serviceDetail" ("serviceDetailId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "statusChange"
+  ADD CONSTRAINT "chg_has_sts_FK"
+    FOREIGN KEY ("statusId")
+    REFERENCES "serviceStatus" ("statusId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceStatus" ADD CONSTRAINT "cpn_has_sst_FK" FOREIGN KEY ("companyId") REFERENCES "company" ("companyId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "statusChange"
+  ADD CONSTRAINT "ord_has_chg_FK"
+    FOREIGN KEY ("serviceOrderId")
+    REFERENCES "serviceOrder" ("serviceOrderId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceOrder" ADD CONSTRAINT "ser_has_sst_FK" FOREIGN KEY ("statusId") REFERENCES "serviceStatus" ("statusId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "statusChange"
+  ADD CONSTRAINT "chg_req_usr_FK"
+    FOREIGN KEY ("userId")
+    REFERENCES "user" ("userId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "statusChange" ADD CONSTRAINT "chg_has_sts_FK" FOREIGN KEY ("statusId") REFERENCES "serviceStatus" ("statusId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "surveyQuestion"
+  ADD CONSTRAINT "svy_has_qst_FK"
+    FOREIGN KEY ("surveyId")
+    REFERENCES "survey" ("surveyId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "statusChange" ADD CONSTRAINT "ord_has_chg_FK" FOREIGN KEY ("serviceOrderId") REFERENCES "serviceOrder" ("serviceOrderId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "surveyQuestion"
+  ADD CONSTRAINT "qtn_belongsTo_svy_FK"
+    FOREIGN KEY ("questionId")
+    REFERENCES "question" ("questionId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "statusChange" ADD CONSTRAINT "chg_req_usr_FK" FOREIGN KEY ("userId") REFERENCES "user" ("userId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "survey"
+  ADD CONSTRAINT "cpn_mayHas_svy_FK"
+    FOREIGN KEY ("companyId")
+    REFERENCES "company" ("companyId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "surveyQuestion" ADD CONSTRAINT "svy_has_qst_FK" FOREIGN KEY ("surveyId") REFERENCES "survey" ("surveyId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "session"
+  ADD CONSTRAINT "usr_has_ses_FK"
+    FOREIGN KEY ("userId")
+    REFERENCES "user" ("userId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "surveyQuestion" ADD CONSTRAINT "qtn_belongsTo_svy_FK" FOREIGN KEY ("questionId") REFERENCES "question" ("questionId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "serviceDetail"
+  ADD CONSTRAINT "det_has_service_FK"
+    FOREIGN KEY ("serviceId")
+    REFERENCES "service" ("serviceId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "survey" ADD CONSTRAINT "cpn_mayHas_svy_FK" FOREIGN KEY ("companyId") REFERENCES "company" ("companyId") ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE "serviceDetail"
+  ADD CONSTRAINT "srv_has_det_FK"
+    FOREIGN KEY ("serviceOrderId")
+    REFERENCES "serviceOrder" ("serviceOrderId")
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
 ;
-
-ALTER TABLE "session" ADD CONSTRAINT "usr_has_ses_FK" FOREIGN KEY ("userId") REFERENCES "user" ("userId") ON DELETE NO ACTION ON UPDATE NO ACTION
-;
-
 

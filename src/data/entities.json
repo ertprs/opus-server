@@ -37,7 +37,11 @@
         "serviceStatusUp": "Estado de ervicio",
         "serviceStatusLow": "estado de servicio",
         "serviceStatusPluralUp": "Estados de servicio",
-        "serviceStatusPluralLow": "estados de servicio"
+        "serviceStatusPluralLow": "estados de servicio",
+        "serviceOrderUp": "Orden de servicio",
+        "serviceOrderLow": "orden de servicio",
+        "serviceOrderPluralUp": "Órdenes de servicio",
+        "serviceOrderPluralLow": "órdenes de servicio"
     },
     {
         "language": "en",
@@ -78,6 +82,10 @@
         "serviceStatusUp": "Service status",
         "serviceStatusLow": "service status",
         "serviceStatusPluralUp": "Service status",
-        "serviceStatusPluralLow": "Serice status"
+        "serviceStatusPluralLow": "Serice status",
+        "serviceOrderUp": "Service order",
+        "serviceOrderLow": "service order",
+        "serviceOrderPluralUp": "Service orders",
+        "serviceOrderPluralLow": "service orders"
     }
 ]

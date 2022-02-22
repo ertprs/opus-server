@@ -5,7 +5,7 @@ const ServiceStatus = require('./ServiceStatus');
 const Model = require('./Model');
 
 const ServiceOrder = sequelize.define('serviceOrder', {
-    serviceOrderId : {
+    serviceOrderId: {
         type: Sequelize.INTEGER,
         primaryKey: true
     },
@@ -51,7 +51,7 @@ const ServiceOrder = sequelize.define('serviceOrder', {
         allowNull: false
     },
     techSpecifications: {
-        type:Sequelize.STRING(400)
+        type: Sequelize.STRING(400)
     },
     problemDescription: {
         type: Sequelize.TEXT,
@@ -111,13 +111,13 @@ const ServiceOrder = sequelize.define('serviceOrder', {
     freezeTableName: true
 });
 
-Client.hasMany(ServiceOrder, { foreignKey: { name: 'companyId', targetKey: 'companyId' } });
-ServiceOrder.belongsTo(Client, { foreignKey: { name: 'companyId', targetKey: 'companyId' } });
+Client.hasMany(ServiceOrder, { foreignKey: { name: 'clientId', targetKey: 'clientId' } });
+ServiceOrder.belongsTo(Client, { foreignKey: { name: 'clientId', targetKey: 'clientId' } });
 
-Model.hasMany( ServiceOrder, { foreignKey: { name: 'modelId', targetKey: 'modelId' } } );
-ServiceOrder.belongsTo( Model, { foreignKey: { name: 'modelId', targetKey: 'modelId' } } );
+Model.hasMany(ServiceOrder, { foreignKey: { name: 'modelId', targetKey: 'modelId' } });
+ServiceOrder.belongsTo(Model, { foreignKey: { name: 'modelId', targetKey: 'modelId' } });
 
-ServiceStatus.hasMany( ServiceOrder, { foreignKey: { name: 'statusId', targetKey: 'statusId' } } );
-ServiceOrder.belongsTo( ServiceStatus, { foreignKey: { name: 'statusId', targetKey: 'statusId' } } );
+ServiceStatus.hasMany(ServiceOrder, { foreignKey: { name: 'statusId', targetKey: 'statusId' } });
+ServiceOrder.belongsTo(ServiceStatus, { foreignKey: { name: 'statusId', targetKey: 'statusId' } });
 
 module.exports = ServiceOrder;

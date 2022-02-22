@@ -41,7 +41,11 @@
         "serviceOrderUp": "Orden de servicio",
         "serviceOrderLow": "orden de servicio",
         "serviceOrderPluralUp": "Órdenes de servicio",
-        "serviceOrderPluralLow": "órdenes de servicio"
+        "serviceOrderPluralLow": "órdenes de servicio",
+        "serviceDetailUp": "Detalle de orden de servicio",
+        "serviceDetailLow": "detalle de orden de servicio",
+        "serviceDetailPluralUp": "Detalles de órdenes de servicio",
+        "serviceDetailPluralLow": "detalles de órdenes de servicio"
     },
     {
         "language": "en",
@@ -86,6 +90,10 @@
         "serviceOrderUp": "Service order",
         "serviceOrderLow": "service order",
         "serviceOrderPluralUp": "Service orders",
-        "serviceOrderPluralLow": "service orders"
+        "serviceOrderPluralLow": "service orders",
+        "serviceDetailUp": "Service order detail",
+        "serviceDetailLow": "service order detail",
+        "serviceDetailPluralUp": "Serivece order details",
+        "serviceDetailPluralLow": "service order details"
     }
 ]

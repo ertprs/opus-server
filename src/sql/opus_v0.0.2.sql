@@ -388,7 +388,7 @@ CREATE TABLE "serviceOrder"
   "number" Numeric NOT NULL,
   "observation" Text NOT NULL,
   "lockPatron" Character varying(100),
-  "isFinished" Boolean,
+  "isFinished" Boolean DEFAULT false NOT NULL,
   "receptionDate" Date DEFAULT current_date NOT NULL,
   "receptionHour" Time DEFAULT current_time NOT NULL,
   "serialNumber" Character varying(80),
@@ -399,9 +399,9 @@ CREATE TABLE "serviceOrder"
   "problemDescription" Text NOT NULL,
   "lockPass" Character varying(200),
   "hasSurvey" Boolean DEFAULT false NOT NULL,
-  "isActive" Boolean,
+  "isActive" Boolean DEFAULT true NOT NULL,,
   "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
-  "updateAt" Timestamp with time zone,
+  "updatedAt" Timestamp with time zone,
   "deletedAt" Timestamp with time zone,
   "clientId" Integer,
   "modelId" Integer,
@@ -1109,3 +1109,5 @@ ALTER TABLE "serviceDetail"
       ON UPDATE NO ACTION
 ;
 
+ALTER TABLE "serviceDetail"
+    ADD CONSTRAINT "order_service_UQ" UNIQUE ("serviceId", "serviceOrderId");

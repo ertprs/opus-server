@@ -16,7 +16,7 @@ const onlyNumbers = (text) => {
     let value = [];
     let j = 0;
     let valueNumbers;
-    for (let i = 0; i < arrayText.length - 1; i++) {
+    for (let i = 0; i < arrayText.length; i++) {
         if (numbers.indexOf(arrayText[i]) >= 0) {
             value[j] = arrayText[i];
             j++;
@@ -35,7 +35,7 @@ const onlyChars = (text) => {
     let value = [];
     let j = 0;
     let valueCharacters;
-    for (let i = 0; i < arrayText.length - 1; i++) {
+    for (let i = 0; i < arrayText.length; i++) {
         if (letters.indexOf(arrayText[i]) >= 0) {
             value[j] = arrayText[i];
             j++;

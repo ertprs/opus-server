@@ -27,7 +27,9 @@ const ServiceOrder = sequelize.define('serviceOrder', {
         type: Sequelize.STRING(100)
     },
     isFinished: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
     },
     receptionDate: {
         type: Sequelize.DATE,

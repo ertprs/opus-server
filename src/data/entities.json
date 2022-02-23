@@ -45,7 +45,11 @@
         "serviceDetailUp": "Detalle de orden de servicio",
         "serviceDetailLow": "detalle de orden de servicio",
         "serviceDetailPluralUp": "Detalles de órdenes de servicio",
-        "serviceDetailPluralLow": "detalles de órdenes de servicio"
+        "serviceDetailPluralLow": "detalles de órdenes de servicio",
+        "dniUp": "Documento de identidad",
+        "dniLow": "documento de identidad",
+        "dniPluralUp": "Documentos de identidad",
+        "dniPluralLow": "Documentos de identidad"
     },
     {
         "language": "en",
@@ -94,6 +98,10 @@
         "serviceDetailUp": "Service order detail",
         "serviceDetailLow": "service order detail",
         "serviceDetailPluralUp": "Serivece order details",
-        "serviceDetailPluralLow": "service order details"
+        "serviceDetailPluralLow": "service order details",
+        "dniUp": "Identification document",
+        "dniLow": "identification document",
+        "dniPluralUp": "Identification documents",
+        "dniPluralLow": "identification documents"
     }
 ]

@@ -226,9 +226,9 @@ const updatePerson = async(req, res = response) => {
         }
         // Prepare object for update
         let personToUpdate = {
-            names: names? opusCrypt(names) : undefined,
-            lastNames: lastNames? opusCrypt(lastNames) : undefined,
-            dni: dni? opusCrypt(onlyNumbers(trimSpaces(dni))) : undefined,
+            names: names ? opusCrypt(names) : undefined,
+            lastNames: lastNames ? opusCrypt(lastNames) : undefined,
+            dni: dni ? opusCrypt(onlyNumbers(trimSpaces(dni))) : undefined,
             phone: phone ? opusCrypt(phone) : undefined,
             mobilePhone: mobilePhone ? opusCrypt(onlyNumbers(trimSpaces(mobilePhone))) : undefined,
             email: email ? opusCrypt(email) : undefined,
@@ -236,7 +236,7 @@ const updatePerson = async(req, res = response) => {
             reference: reference ? opusCrypt(reference) : undefined,
             birthdate,
             details,
-            updatedAt: sequelize.NOW
+            updatedAt: sequelize.literal('CURRENT_TIMESTAMP')
         }
         await Person.update(personToUpdate, {
             where: {

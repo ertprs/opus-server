@@ -6,10 +6,14 @@ const Client = require('../models/Client');
 const ServiceStatus = require('../models/ServiceStatus');
 const Model = require('../models/Model');
 const Person = require('../models/Person');
+const ServiceDetail = require('../models/ServiceDetail');
+const Service = require('../models/Service');
+const Brand = require('../models/Brand');
+const StatusChange = require('../models/StatusChange');
 
 const { getUuid } = require('../helpers/uuidGenerator');
 const { opusLog } = require('../helpers/log4js');
-const { lowerCase } = require('../helpers/stringHandling');
+const { lowerCase, onlyNumbers, trimSpaces } = require('../helpers/stringHandling');
 const { getRoleName } = require('../middlewares/roleValidation');
 const { opusCrypt, opusDecrypt } = require('../helpers/crypto');
 
@@ -18,8 +22,6 @@ const { selectLanguage } = require('../helpers/selectLanguage');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 const messageFile = require('../data/messages.json');
 const entityFile = require('../data/entities.json');
-const ServiceDetail = require('../models/ServiceDetail');
-const Service = require('../models/Service');
 
 // Create a new serviceStatus of a device
 const createServiceOrder = async(req, res = response) => {
@@ -105,6 +107,17 @@ const createServiceOrder = async(req, res = response) => {
             fields: ['uuid', 'number', 'observation', 'lockPatron', 'receptionDate', 'receptionHour', 'serialNumber', 'color', 'isRepair', 'techSpecifications', 'problemDescription', 'lockPass', 'advancePayment', 'clientId', 'statusId', 'modelId'],
             returning: ['serviceOrderId', 'uuid', 'number', 'observation', 'lockPatron', 'receptionDate', 'receptionHour', 'serialNumber', 'color', 'isRepair', 'techSpecifications', 'problemDescription', 'lockPass', 'advancePayment', 'clientId', 'statusId', 'modelId', 'isActive', 'createdAt']
         });
+        // Create the flow in status change table
+        await StatusChange.create({
+            uuid: getUuid(),
+            sysDetail: messageFile[index].statusChageCreated,
+            statusId,
+            serviceOrderId: newServiceOrder.serviceOrderId,
+            userId: req.user.userId
+        }, {
+            fields: ['uuid', 'sysDetails', 'statusId', 'serviceOrderId', 'userId']
+        });
+        // Return the information
         return res.status(200).json({
             ok: true,
             msg: entityFile[index].serviceOrderUp + messageFile[index].okCreateFemale,
@@ -124,8 +137,8 @@ const createServiceOrder = async(req, res = response) => {
 // Get company service orders
 const getActiveServiceOrder = async(req, res = response) => {
     const companyId = req.user.companyId;
-    const limit = req.params.limit;
-    const offset = req.params.offset;
+    const limit = req.query.limit;
+    const offset = req.query.offset;
     try {
         const findServiceOrder = await ServiceOrder.findAndCountAll({
             where: {
@@ -133,20 +146,24 @@ const getActiveServiceOrder = async(req, res = response) => {
             },
             include: [{
                 model: Client,
-                attributes: ['clientId', 'personId', 'companyId'],
+                attributes: ['uuid', 'clientId', 'personId', 'companyId'],
                 where: {
                     companyId
                 },
                 include: [{
                     model: Person,
-                    attributes: ['names', 'lastNames', 'dni', 'mobilePhone', 'email']
+                    attributes: ['uuid', 'names', 'lastNames', 'dni', 'mobilePhone', 'email']
                 }]
             }, {
                 model: Model,
-                attributes: ['name', 'shortName', 'img']
+                attributes: ['uuid', 'name', 'shortName', 'img'],
+                include: [{
+                    model: Brand,
+                    attributes: ['uuid', 'name', 'shortName', 'url']
+                }]
             }, {
                 model: ServiceStatus,
-                attributes: ['order', 'name', 'cost']
+                attributes: ['uuid', 'order', 'name', 'cost']
             }],
             limit,
             offset,
@@ -186,6 +203,7 @@ const getActiveServiceOrder = async(req, res = response) => {
                     statusId: serviceOrders[i].statusId,
                     client: {
                         person: {
+                            uuid: serviceOrders[i].client.person.uuid,
                             names: serviceOrders[i].client.person.names ? opusDecrypt(serviceOrders[i].client.person.names) : undefined,
                             lastNames: serviceOrders[i].client.person.lastNames ? opusDecrypt(serviceOrders[i].client.person.lastNames) : undefined,
                             dni: serviceOrders[i].client.person.dni ? opusDecrypt(serviceOrders[i].client.person.dni) : undefined,
@@ -194,11 +212,19 @@ const getActiveServiceOrder = async(req, res = response) => {
                         }
                     },
                     model: {
+                        uuid: serviceOrders[i].model.uuid,
                         name: serviceOrders[i].model.name,
                         shortName: serviceOrders[i].model.shortName,
-                        img: serviceOrders[i].model.img
+                        img: serviceOrders[i].model.img,
+                        brand: {
+                            uuid: serviceOrders[i].model.brand.uuid,
+                            name: serviceOrders[i].model.brand.name,
+                            shortName: serviceOrders[i].model.brand.shortName,
+                            url: serviceOrders[i].model.brand.url
+                        }
                     },
                     serviceStatus: {
+                        uuid: serviceOrders[i].serviceStatus.uuid,
                         order: serviceOrders[i].serviceStatus.order,
                         name: serviceOrders[i].serviceStatus.name,
                         cost: serviceOrders[i].serviceStatus.cost
@@ -233,23 +259,27 @@ const getActiveServiceOrder = async(req, res = response) => {
 
 // Get company service orders
 const getAllActiveServiceOrders = async(req, res = response) => {
-    const limit = req.params.limit;
-    const offset = req.params.offset;
+    const limit = req.query.limit;
+    const offset = req.query.offset;
     try {
         const findServiceOrder = await ServiceOrder.findAndCountAll({
             include: [{
                 model: Client,
-                attributes: ['clientId', 'personId', 'companyId'],
+                attributes: ['uuid', 'clientId', 'personId', 'companyId'],
                 include: [{
                     model: Person,
-                    attributes: ['names', 'lastNames', 'dni', 'mobilePhone', 'email']
+                    attributes: ['uuid', 'names', 'lastNames', 'dni', 'mobilePhone', 'email']
                 }]
             }, {
                 model: Model,
-                attributes: ['name', 'shortName', 'img']
+                attributes: ['uuid', 'name', 'shortName', 'img'],
+                include: [{
+                    model: Brand,
+                    attributes: ['uuid', 'name', 'shortName', 'url']
+                }]
             }, {
                 model: ServiceStatus,
-                attributes: ['order', 'name', 'cost']
+                attributes: ['uuid', 'order', 'name', 'cost']
             }],
             limit,
             offset,
@@ -288,6 +318,7 @@ const getAllActiveServiceOrders = async(req, res = response) => {
                     statusId: serviceOrders[i].statusId,
                     client: {
                         person: {
+                            uuid: serviceOrders[i].client.person.uuid,
                             names: serviceOrders[i].client.person.names ? opusDecrypt(serviceOrders[i].client.person.names) : undefined,
                             lastNames: serviceOrders[i].client.person.lastNames ? opusDecrypt(serviceOrders[i].client.person.lastNames) : undefined,
                             dni: serviceOrders[i].client.person.dni ? opusDecrypt(serviceOrders[i].client.person.dni) : undefined,
@@ -296,11 +327,19 @@ const getAllActiveServiceOrders = async(req, res = response) => {
                         }
                     },
                     model: {
+                        uuid: serviceOrders[i].model.uuid,
                         name: serviceOrders[i].model.name,
                         shortName: serviceOrders[i].model.shortName,
-                        img: serviceOrders[i].model.img
+                        img: serviceOrders[i].model.img,
+                        brand: {
+                            uuid: serviceOrders[i].model.brand.uuid,
+                            name: serviceOrders[i].model.brand.name,
+                            shortName: serviceOrders[i].model.brand.shortName,
+                            url: serviceOrders[i].model.brand.url
+                        }
                     },
                     serviceStatus: {
+                        uuid: serviceOrders[i].serviceStatus.uuid,
                         order: serviceOrders[i].serviceStatus.order,
                         name: serviceOrders[i].serviceStatus.name,
                         cost: serviceOrders[i].serviceStatus.cost
@@ -357,7 +396,7 @@ const updateServiceOrder = async(req, res = response) => {
         statusId,
     } = req.body;
     // Validate if a required value comes with nulled values
-    if(observation === '' || problemDescription === '' || clientId === '' || modelId === '' || statusId === '' ) {
+    if (observation === '' || problemDescription === '' || clientId === '' || modelId === '' || statusId === '') {
         return res.status(400).json({
             ok: false,
             msg: messageFile[index].mandatoryMissing
@@ -369,19 +408,17 @@ const updateServiceOrder = async(req, res = response) => {
         if (lowerCase(roleName) !== lowerCase(process.env.USR_ADMIN)) {
             searchCondition = {
                 where: {
-                    isActive: true, 
+                    isActive: true,
                     serviceOrderId,
                 },
-                include: [
-                    {
-                        model: Client,
-                        where: {
-                            companyId
-                        }
+                include: [{
+                    model: Client,
+                    where: {
+                        companyId
                     }
-                ]
+                }]
             }
-            
+
         } else {
             searchCondition = {
                 where: {
@@ -389,7 +426,7 @@ const updateServiceOrder = async(req, res = response) => {
                 }
             }
         }
-        const findServiceOrder = await ServiceOrder.findOne( searchCondition );
+        const findServiceOrder = await ServiceOrder.findOne(searchCondition);
         if (findServiceOrder === undefined || findServiceOrder === null || !findServiceOrder) {
             return res.status(400).json({
                 ok: false,
@@ -413,7 +450,7 @@ const updateServiceOrder = async(req, res = response) => {
             modelId,
             statusId,
             updatedAt: sequelize.literal('CURRENT_TIMESTAMP')
-        },{
+        }, {
             where: {
                 serviceOrderId
             }
@@ -482,14 +519,12 @@ const changeServiceOrderStatus = async(req, res = response) => {
                     serviceOrderId,
                     isActive: !activation,
                 },
-                include: [
-                    {
-                        model: Client,
-                        where: {
-                            companyId
-                        }
+                include: [{
+                    model: Client,
+                    where: {
+                        companyId
                     }
-                ]
+                }]
             }
         } else {
             searchCondition = {
@@ -540,8 +575,8 @@ const deleteServiceOrder = async(req, res = response) => {
             where: {
                 serviceOrderId
             }
-        }); 
-        if( deletedServiceOder > 0 ) {
+        });
+        if (deletedServiceOder > 0) {
             return res.status(200).json({
                 ok: true,
                 msg: entityFile[index].serviceOrderUp + messageFile[index].okDeleteFemale
@@ -569,16 +604,18 @@ const getPendingServiceOrders = async(req, res = response) => {
     const offset = req.query.offset || 0;
     try {
         const findPendingCount = await sequelize.query(`
-            SELECT count(*)
-            FROM "serviceOrder" srv, "client" clt, "person" prs
+            SELECT COUNT(*)
+            FROM "serviceOrder" srv, "client" clt, "person" prs, "model" mdl, "brand" brd
             WHERE srv."clientId" = clt."clientId"
                 AND clt."personId" = prs."personId"
+                AND srv."modelId" = mdl."modelId"
+                AND brd."brandId" = mdl."brandId"
                 AND clt."companyId" = ${ companyId }
                 AND srv."isFinished" = false
                 AND srv."isActive" = true;
         `);
         const count = Number(findPendingCount[0][0].count);
-        if( count > 0 ) {
+        if (count > 0) {
             const findingPending = await sequelize.query(`
                 SELECT	srv."serviceOrderId",
                         srv."uuid" "serviceUuid",
@@ -615,10 +652,19 @@ const getPendingServiceOrders = async(req, res = response) => {
                         prs."phone",
                         prs."mobilePhone",
                         prs."email",
-                        prs."isActive"
-                FROM "serviceOrder" srv, "client" clt, "person" prs
+                        prs."isActive",
+                        mdl."name",
+                        mdl."shortName",
+                        mdl."img",
+                        mdl."url",
+                        brd."name" "brandName",
+                        brd."shortName" "brandShortName",
+                        brd."url" "brandUrl"
+                FROM "serviceOrder" srv, "client" clt, "person" prs, "model" mdl, "brand" brd
                 WHERE srv."clientId" = clt."clientId"
                     AND clt."personId" = prs."personId"
+                    AND srv."modelId" = mdl."modelId"
+                    AND brd."brandId" = mdl."brandId"
                     AND clt."companyId" = ${ companyId }
                     AND srv."isFinished" = false
                     AND srv."isActive" = true
@@ -642,7 +688,7 @@ const getPendingServiceOrders = async(req, res = response) => {
                     isRepair: resultArray[i].isRepair,
                     techSpecifications: resultArray[i].techSpecifications,
                     problemDescription: resultArray[i].problemDescription,
-                    lockPass: resultArray[i].lockPass ? opusDecrypt( resultArray[i].lockPass ) : undefined,
+                    lockPass: resultArray[i].lockPass ? opusDecrypt(resultArray[i].lockPass) : undefined,
                     hasSurvey: resultArray[i].hasSurvey,
                     isActive: resultArray[i].isActive,
                     createdAt: resultArray[i].createdAt,
@@ -651,6 +697,17 @@ const getPendingServiceOrders = async(req, res = response) => {
                     clientId: resultArray[i].clientId,
                     modelId: resultArray[i].modelId,
                     statusId: resultArray[i].statusId,
+                    model: {
+                        name: resultArray[i].name,
+                        shortName: resultArray[i].shortName,
+                        img: resultArray[i].img,
+                        url: resultArray[i].url,
+                        brand: {
+                            name: resultArray[i].brandName,
+                            shortName: resultArray[i].brandShortName,
+                            url: resultArray[i].brandUrl,
+                        },
+                    },
                     client: {
                         uuid: resultArray[i].clientUuid,
                         servicesNumber: resultArray[i].servicesNumber,
@@ -703,16 +760,18 @@ const getCompleteServiceOrder = async(req, res = response) => {
     try {
         const findCompleteOrderCount = await sequelize.query(`
             SELECT COUNT(*)
-            FROM "serviceOrder" srv, "client" clt, "person" prs
+            FROM "serviceOrder" srv, "client" clt, "person" prs, "model" mdl, "brand" brd
             WHERE srv."clientId" = clt."clientId"
                 AND clt."personId" = prs."personId"
+                AND srv."modelId" = mdl."modelId"
+                AND brd."brandId" = mdl."brandId"
                 AND clt."companyId" = ${ companyId }
                 AND srv."isFinished" = false
                 AND srv."isActive" = true
                 AND srv."number" = ${ order }
         `);
         const count = Number(findCompleteOrderCount[0][0].count);
-        if( count > 0 ) { 
+        if (count > 0) {
             const findServiceOrder = await sequelize.query(`
                 SELECT	srv."serviceOrderId",
                         srv."uuid" "serviceUuid",
@@ -749,10 +808,19 @@ const getCompleteServiceOrder = async(req, res = response) => {
                         prs."phone",
                         prs."mobilePhone",
                         prs."email",
-                        prs."isActive"
-                FROM "serviceOrder" srv, "client" clt, "person" prs
+                        prs."isActive",
+                        mdl."name",
+                        mdl."shortName",
+                        mdl."img",
+                        mdl."url",
+                        brd."name" "brandName",
+                        brd."shortName" "brandShortName",
+                        brd."url" "brandUrl"
+                FROM "serviceOrder" srv, "client" clt, "person" prs, "model" mdl, "brand" brd
                 WHERE srv."clientId" = clt."clientId"
                     AND clt."personId" = prs."personId"
+                    AND srv."modelId" = mdl."modelId"
+                    AND brd."brandId" = mdl."brandId"
                     AND clt."companyId" = ${ companyId } 
                     AND srv."isFinished" = false
                     AND srv."isActive" = true
@@ -763,11 +831,9 @@ const getCompleteServiceOrder = async(req, res = response) => {
                 where: {
                     serviceOrderId: result.serviceOrderId
                 },
-                include: [
-                    {
-                        model: Service
-                    }
-                ]
+                include: [{
+                    model: Service
+                }]
             });
             let serviceOrder = {
                 serviceOrderId: result.serviceOrderId,
@@ -782,7 +848,7 @@ const getCompleteServiceOrder = async(req, res = response) => {
                 isRepair: result.isRepair,
                 techSpecifications: result.techSpecifications,
                 problemDescription: result.problemDescription,
-                lockPass: result.lockPass ? opusDecrypt( result.lockPass ) : undefined,
+                lockPass: result.lockPass ? opusDecrypt(result.lockPass) : undefined,
                 hasSurvey: result.hasSurvey,
                 isActive: result.isActive,
                 createdAt: result.createdAt,
@@ -791,6 +857,17 @@ const getCompleteServiceOrder = async(req, res = response) => {
                 clientId: result.clientId,
                 modelId: result.modelId,
                 statusId: result.statusId,
+                model: {
+                    name: result.name,
+                    shortName: result.shortName,
+                    img: result.img,
+                    url: result.url,
+                    brand: {
+                        name: result.brandName,
+                        shortName: result.brandShortName,
+                        url: result.brandUrl,
+                    },
+                },
                 client: {
                     uuid: result.clientUuid,
                     servicesNumber: result.servicesNumber,
@@ -836,6 +913,187 @@ const getCompleteServiceOrder = async(req, res = response) => {
     }
 }
 
+// Get service order of a client (by dni)
+const getClientServiceOrderByDni = async(req, res = response) => {
+    const dni = req.query.dni;
+    const companyId = req.user.companyId;
+    const limit = req.query.limit || 20;
+    const offset = req.query.offset || 0;
+    if (!dni || dni === '' || dni.length < 10) {
+        return res.status(400).json({
+            ok: false,
+            msg: entityFile[index].dniUp + messageFile[index].invalidParam
+        });
+    }
+    try {
+        console.log(opusCrypt(dni));
+        console.log('companyId:', companyId);
+        const findClientOrdersCount = await sequelize.query(`
+            SELECT COUNT(*)
+            FROM "serviceOrder" srv, "client" clt, "person" prs, "model" mdl, "brand" brd
+                WHERE srv."clientId" = clt."clientId"
+                    AND clt."personId" = prs."personId"
+                    AND srv."modelId" = mdl."modelId"
+                    AND brd."brandId" = mdl."brandId"
+                    AND clt."companyId" = ${ companyId } 
+                    AND srv."isFinished" = false
+                    AND srv."isActive" = true
+                    AND prs."dni" like '${ opusCrypt(onlyNumbers(trimSpaces(dni))) }'
+        `);
+        const count = Number(findClientOrdersCount[0][0].count);
+        console.log('count:', count)
+        if (count > 0) {
+            const findClientOrders = await sequelize.query(`
+                SELECT	srv."serviceOrderId",
+                        srv."uuid" "serviceUuid",
+                        srv."number",
+                        srv."lockPatron",
+                        srv."isFinished",
+                        srv."receptionDate",
+                        srv."receptionHour",
+                        srv."serialNumber",
+                        srv."color",
+                        srv."isRepair",
+                        srv."techSpecifications",
+                        srv."problemDescription",
+                        srv."lockPass",
+                        srv."hasSurvey",
+                        srv."isActive",
+                        srv."createdAt",
+                        srv."updatedAt",
+                        srv."deletedAt",
+                        srv."clientId",
+                        srv."modelId",
+                        srv."statusId",
+                        clt."uuid" "clientUuid",
+                        clt."servicesNumber",
+                        clt."details",
+                        clt."isActive",
+                        clt."hasWhatsapp",
+                        clt."hasEmail",
+                        clt."personId",
+                        prs."uuid" "personUuid",
+                        prs."names",
+                        prs."lastNames",
+                        prs."dni",
+                        prs."phone",
+                        prs."mobilePhone",
+                        prs."email",
+                        prs."isActive",
+                        mdl."name",
+                        mdl."shortName",
+                        mdl."img",
+                        mdl."url",
+                        brd."name" "brandName",
+                        brd."shortName" "brandShortName",
+                        brd."url" "brandUrl"
+                FROM "serviceOrder" srv, "client" clt, "person" prs, "model" mdl, "brand" brd
+                WHERE srv."clientId" = clt."clientId"
+                    AND clt."personId" = prs."personId"
+                    AND srv."modelId" = mdl."modelId"
+                    AND brd."brandId" = mdl."brandId"
+                    AND clt."companyId" = ${ companyId } 
+                    AND srv."isFinished" = false
+                    AND srv."isActive" = true
+                    AND prs."dni" like '${ opusCrypt(onlyNumbers(trimSpaces(dni))) }'
+                ORDER BY srv."receptionDate" DESC
+                LIMIT ${ limit }
+                OFFSET ${ offset };	
+            `);
+            const resultArray = findClientOrders[0];
+            console.log('resultaArray:', resultArray);
+            let client = {
+                uuid: resultArray[0].clientUuid,
+                servicesNumber: resultArray[0].servicesNumber,
+                details: resultArray[0].details,
+                isActive: resultArray[0].isActive,
+                hasWhatsapp: resultArray[0].hasWhatsapp,
+                hasEmail: resultArray[0].hasEmail,
+                personId: resultArray[0].personId,
+                person: {
+                    uuid: resultArray[0].personUuid,
+                    names: resultArray[0].names ? opusDecrypt(resultArray[0].names) : undefined,
+                    lastNames: resultArray[0].lastNames ? opusDecrypt(resultArray[0].lastNames) : undefined,
+                    dni: resultArray[0].dni ? opusDecrypt(resultArray[0].dni) : undefined,
+                    phone: resultArray[0].phone ? opusDecrypt(resultArray[0].phone) : undefined,
+                    mobilePhone: resultArray[0].mobilePhone ? opusDecrypt(resultArray[0].mobilePhone) : undefined,
+                    email: resultArray[0].email ? opusDecrypt(resultArray[0].email) : undefined,
+                    isActive: resultArray[0].isActive,
+                }
+            }
+            let serviceOrders = [];
+            for (let i = 0; i < resultArray.length; i++) {
+                const findDetails = await ServiceDetail.findAndCountAll({
+                    attributes: ['uuid', 'cost', 'balance', 'details', ],
+                    where: {
+                        serviceOrderId: resultArray[i].serviceOrderId
+                    },
+                    include: [{
+                        model: Service,
+                        attributes: ['uuid', 'name', 'price', 'detail']
+                    }]
+                });
+                serviceOrders[i] = {
+                    serviceOrderId: resultArray[i].serviceOrderId,
+                    uuid: resultArray[i].serviceUuid,
+                    number: resultArray[i].number,
+                    lockPatron: resultArray[i].lockPatron ? opusDecrypt(resultArray[i].lockPatron) : undefined,
+                    isFinished: resultArray[i].isFinished,
+                    receptionDate: resultArray[i].receptionDate,
+                    receptionHour: resultArray[i].receptionHour,
+                    serialNumber: resultArray[i].serialNumber,
+                    color: resultArray[i].color,
+                    isRepair: resultArray[i].isRepair,
+                    techSpecifications: resultArray[i].techSpecifications,
+                    problemDescription: resultArray[i].problemDescription,
+                    lockPass: resultArray[i].lockPass ? opusDecrypt(resultArray[i].lockPass) : undefined,
+                    hasSurvey: resultArray[i].hasSurvey,
+                    isActive: resultArray[i].isActive,
+                    createdAt: resultArray[i].createdAt,
+                    updatedAt: resultArray[i].updatedAt,
+                    deletedAt: resultArray[i].deletedAt,
+                    clientId: resultArray[i].clientId,
+                    modelId: resultArray[i].modelId,
+                    statusId: resultArray[i].statusId,
+                    model: {
+                        name: resultArray[i].name,
+                        shortName: resultArray[i].shortName,
+                        img: resultArray[i].img,
+                        url: resultArray[i].url,
+                        brand: {
+                            name: resultArray[i].brandName,
+                            shortName: resultArray[i].brandShortName,
+                            url: resultArray[i].brandUrl,
+                        },
+                    },
+                    serviceDetails: findDetails.rows
+                }
+            }
+            return res.status(200).json({
+                ok: true,
+                msg: entityFile[index].serviceOrderPluralUp + messageFile[index].okGotMalePlural,
+                serviceOrders: {
+                    count,
+                    client,
+                    serviceOrders
+                }
+            });
+        } else {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].serviceOrderLow
+            });
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Getting historical service order by client [${ dni }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].serviceOrderLow
+        });
+    }
+}
+
 // Get order number
 const getOrderNumber = async() => {
     try {
@@ -860,5 +1118,6 @@ module.exports = {
     changeServiceOrderStatus,
     deleteServiceOrder,
     getPendingServiceOrders,
-    getCompleteServiceOrder
+    getCompleteServiceOrder,
+    getClientServiceOrderByDni
 }

@@ -13,6 +13,7 @@ router.post('/', [
         check('names', 'Name are requiered').not().isEmpty(),
         check('lastNames', 'Last name are requiered').not().isEmpty(),
         check('dni', 'DNI is requiered').not().isEmpty(),
+        check('dni').isLength({ min: 10, max: 13 }),
         check('mobilePhone', 'Mobile phone is requiered').not().isEmpty(),
         tokenValidation,
         userValidation,

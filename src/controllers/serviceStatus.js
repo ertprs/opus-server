@@ -21,12 +21,12 @@ const createServiceStatus = async(req, res = response) => {
     const {
         name,
         details,
-        order,
         cost,
         options
     } = req.body;
     let uuid = getUuid();
     let companyId = req.user.companyId;
+    let order = await assignOrderNumber(companyId);
     try {
         // Validate if the company is the user's company
         const validateCompany = await User.findOne({
@@ -330,6 +330,22 @@ const deleteServiceStatus = async(req, res = reponse) => {
             msg: messageFile[index].errorDeleting + entityFile[index].serviceStatusLow
         });
     }
+}
+
+// Assing an order number for a status
+const assignOrderNumber = async(companyId) => {
+    let number = 0;
+    if( !companyId ) {
+        return -1;
+    }
+    const order = await sequelize.query(`
+        SELECT coalesce(max("order"), 0) "number"
+        FROM "serviceStatus"
+        WHERE "companyId" = ${ companyId }
+            AND "isActive" = true;
+    `);
+    number = Number(order[0][0].number);
+    return number + 1;
 }
 
 module.exports = {

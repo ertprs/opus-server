@@ -405,7 +405,7 @@ CREATE TABLE "serviceOrder"
   "deletedAt" Timestamp with time zone,
   "clientId" Integer,
   "modelId" Integer,
-  "statusId" Integer
+  --"statusId" Integer
 )
 WITH (
   autovacuum_enabled=true)
@@ -461,8 +461,8 @@ CREATE INDEX "order_client_IX" ON "serviceOrder" ("clientId")
 CREATE INDEX "order_model_IX" ON "serviceOrder" ("modelId")
 ;
 
-CREATE INDEX "order_status_IX" ON "serviceOrder" ("statusId")
-;
+--CREATE INDEX "order_status_IX" ON "serviceOrder" ("statusId")
+--;
 
 ALTER TABLE "serviceOrder" ADD CONSTRAINT "PK_serviceOrder" PRIMARY KEY ("serviceOrderId")
 ;
@@ -1029,13 +1029,13 @@ ALTER TABLE "serviceStatus"
       ON UPDATE NO ACTION
 ;
 
-ALTER TABLE "serviceOrder"
-  ADD CONSTRAINT "ser_has_sst_FK"
-    FOREIGN KEY ("statusId")
-    REFERENCES "serviceStatus" ("statusId")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
-;
+--ALTER TABLE "serviceOrder"
+--  ADD CONSTRAINT "ser_has_sst_FK"
+--    FOREIGN KEY ("statusId")
+--    REFERENCES "serviceStatus" ("statusId")
+--      ON DELETE NO ACTION
+--      ON UPDATE NO ACTION
+--;
 
 ALTER TABLE "statusChange"
   ADD CONSTRAINT "chg_has_sts_FK"

@@ -115,7 +115,7 @@ const createServiceOrder = async(req, res = response) => {
             serviceOrderId: newServiceOrder.serviceOrderId,
             userId: req.user.userId
         }, {
-            fields: ['uuid', 'sysDetails', 'statusId', 'serviceOrderId', 'userId']
+            fields: ['uuid', 'sysDetail', 'statusId', 'serviceOrderId', 'userId']
         });
         // Return the information
         return res.status(200).json({
@@ -1001,7 +1001,6 @@ const getClientServiceOrderByDni = async(req, res = response) => {
                 OFFSET ${ offset };	
             `);
             const resultArray = findClientOrders[0];
-            console.log('resultaArray:', resultArray);
             let client = {
                 uuid: resultArray[0].clientUuid,
                 servicesNumber: resultArray[0].servicesNumber,

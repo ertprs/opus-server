@@ -50,7 +50,8 @@
         "mandatoryMissing": "Campo(s) obligatorios no han sido enviados",
         "statusChageCreated": "Orden de servicio creada",
         "statusChangeUpdated": "Orden de servicio actualizada a ",
-        "statusChangeFinished": "Orden de servicio finalizada"
+        "statusChangeFinished": "Orden de servicio finalizada",
+        "statusChangeStage": " en esta etapa"
     },
     {
         "language": "en",
@@ -104,6 +105,7 @@
         "mandatoryMissing": "Mandatory fields are not sent",
         "statusChageCreated": "Service order created",
         "statusChangeUpdated": "Service order updated to ",
-        "statusChangeFinished": "Service order finished"
+        "statusChangeFinished": "Service order finished",
+        "statusChangeStage": " at this stage"
     }
 ]

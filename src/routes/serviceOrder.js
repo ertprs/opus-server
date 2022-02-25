@@ -14,7 +14,6 @@ router.post('/', [
         check('problemDescription', 'Problem description is required').not().isEmpty(),
         check('clientId', 'Client is required').not().isEmpty(),
         check('modelId', 'Model is required').not().isEmpty(),
-        check('statusId', 'Service status is required').not().isEmpty(),
         fieldValidation,
         tokenValidation,
         userValidation

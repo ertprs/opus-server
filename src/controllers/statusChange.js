@@ -62,6 +62,7 @@ const getServiceOrderByStatusOrder = async(req, res = response) => {
                 AND clt."companyId" = ${ companyId } 
                 AND srv."isActive" = true
                 AND srv."isFinished" = false
+                AND chg."isCompleted" = false
                 AND sts."statusId" = ${ companyServiceStatus.statusId }
         `);
         const count = Number(findServiceOrderCount[0][0].count);
@@ -87,7 +88,6 @@ const getServiceOrderByStatusOrder = async(req, res = response) => {
                         srv."deletedAt",
                         srv."clientId",
                         srv."modelId",
-                        srv."statusId",
                         clt."uuid" "clientUuid",
                         clt."servicesNumber",
                         clt."details",
@@ -120,6 +120,7 @@ const getServiceOrderByStatusOrder = async(req, res = response) => {
                     AND clt."companyId" = ${ companyId } 
                     AND srv."isActive" = true
                     AND srv."isFinished" = false
+                    AND chg."isCompleted" = false
                     AND sts."statusId" = ${ companyServiceStatus.statusId }
                 ORDER BY srv."receptionDate"
                 LIMIT ${ limit }
@@ -207,48 +208,183 @@ const getServiceOrderByStatusOrder = async(req, res = response) => {
 }
 
 const completeAnStatus = async(req, res = response) => {
-    let companyId = req.user.companyId;
-    let serviceOrderId = req.params.serviceOrder;
-    // 1. Get the order status in change status table
-    const getCurrentStatusId = await StatusChange.max('statusId', {
-        where: {
-            serviceOrderId
+    const companyId = req.user.companyId;
+    const userId = req.user.userId;
+    const {
+        details,
+        serviceOrderId
+    } = req.body;
+    let statusChanged;
+    try {
+        // Validate if the order belongs to the company
+        const getServiceOder = await ServiceOrder.findOne({
+            where: {
+                serviceOrderId,
+                isActive: true
+            },
+            include: [{
+                model: Client,
+                where: {
+                    companyId
+                }
+            }]
+        });
+        if( !getServiceOder ) {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].serviceOrderLow
+            });
         }
-    });
-    if( !getCurrentStatusId ) {
-        return res.status(400).json({
+        // 1. Get the order status in change status table
+        const getCurrentStatusId = await StatusChange.max('statusId', {
+            where: {
+                serviceOrderId
+            }
+        });
+        if( !getCurrentStatusId ) {
+            return res.status(400).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].serviceOrderLow
+            });
+        }
+        const getCurrentStatus = await ServiceStatus.findOne({
+            where: {
+                statusId: getCurrentStatusId,
+                isActive: true
+            }
+        });
+        // 2. Get the next order status in service status table (if doesn't exist then finish the flow)
+        const getNextStatus = await ServiceStatus.findOne({
+            where: {
+                companyId,
+                order: getCurrentStatus.order + 1,
+                isActive: true
+            }
+        });
+        // 3. Get the current status changed in the table
+        const getCurrentStatusChanged = await StatusChange.findOne({
+            where: {
+                serviceOrderId,
+                statusId: getCurrentStatusId,
+                isCompleted: false
+            }
+        });
+        // 4. Update the current state to finished
+        await StatusChange.update({
+            isCompleted: true
+            }, {
+            where: {
+                statusChangeId: getCurrentStatusChanged.statusChangeId
+            }
+        });
+        console.log('sttchaged:', getCurrentStatusChanged.statusChangeId)
+        if( !getNextStatus ){
+            // Update the service order
+            await ServiceOrder.update({
+                isFinished: true,
+                updatedAt: sequelize.literal('CURRENT_TIMESTAMP')
+            }, {
+                where: {
+                    serviceOrderId
+                }
+            });
+            statusChanged = {};
+            return res.status(200).json({
+                ok: true,
+                msg: messageFile[index].statusChangeFinished,
+                change: statusChanged
+            });
+        } else {
+            // Create a new state with the next stause data
+            statusChanged = await StatusChange.create({
+                uuid: getUuid(),
+                details,
+                sysDetail: messageFile[index].statusChangeUpdated + getNextStatus.name,
+                statusId: getNextStatus.statusId,
+                serviceOrderId,
+                userId
+            }, {
+                fields: ['uuid', 'details', 'sysDetail', 'statusId', 'serviceOrderId', 'userId'],
+                returning: ['statusChangeId', 'uuid', 'createdAt', 'details', 'sysDetail', 'statusId', 'serviceOrderId', 'userId']
+            });
+            return res.status(200).json({
+                ok: true,
+                msg: messageFile[index].statusChangeUpdated + getNextStatus.name ,
+                change: statusChanged
+            });
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Updating service order status [${ serviceOrderId }]: ${ error }`, 'error');
+        return res.status(500).json({
             ok: false,
-            msg: messageFile[index].notFound + entityFile[index].serviceOrderLow
+            msg: messageFile[index].errorUpdating + entityFile[index].serviceOrderLow,
+            error
         });
     }
-    const getCurrentStatus = await ServiceStatus.findOne({
-        where: {
-            statusId: getCurrentStatusId,
-            isActive: true
-        }
-    });
-    // 2. Get the next order status in service status table (if doesn't exist then finish the flow)
-    const getNextStatus = await ServiceStatus.findOne({
-        where: {
-            companyId,
-            order: getCurrentStatus.order + 1,
-            isActive: true
-        }
-    });
-    console.log('nextStatus:', getNextStatus);
-    if( !getNextStatus ){
-        console.log('Se terminaría el flujito');
-        await ServiceOrder.update({
-            isFinished: true,
-            updatedAt: sequelize.literal('CURRENT_TIMESTAMP')
-        });
-    }
-    // 3. Update the current status in table with new status 
 }
 
 // Finishing an order status
+const finishServiceOrder = async(req, res = response) => {
+    const serviceOrderId = req.params.serviceOrder;
+    const companyId = req.user.companyId;
+    try {
+        // Validate if the order belongs to the company
+        const getServiceOder = await ServiceOrder.findOne({
+            where: {
+                serviceOrderId,
+                isActive: true
+            },
+            include: [{
+                model: Client,
+                where: {
+                    companyId
+                }
+            }]
+        });
+        if( !getServiceOder ) {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].serviceOrderLow
+            });
+        }
+        // Finishing order status in order status table -> Update
+        await ServiceOrder.update({
+            isFinished: true,
+            updatedAt: sequelize.literal('CURRENT_TIMESTAMP'),
+        }, {
+            where: {
+                serviceOrderId
+            }
+        })
+        // Finishint order status in change status table --> Create
+        await StatusChange.update({
+            isCompleted: true,
+            sysDetail: messageFile[index].statusChangeFinished + ` by [ ${ req.user.email }/${ req.user.userId } ]`
+        }, {
+            where: {
+                isCompleted: false,
+                serviceOrderId
+            }
+        });
+        // Returning information
+        return res.status(200).json({
+            ok: true,
+            msg: messageFile[index].statusChangeFinished
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Finishing service order and status [${ serviceOrderId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorUpdating + entityFile[index].serviceOrderLow,
+            error
+        });
+    }
+}
 
 module.exports = {
     getServiceOrderByStatusOrder,
-    completeAnStatus
+    completeAnStatus,
+    finishServiceOrder
 }

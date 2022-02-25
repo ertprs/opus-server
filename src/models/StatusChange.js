@@ -17,6 +17,11 @@ const StatusChange = sequelize.define('statusChange', {
     details: {
         type: Sequelize.TEXT
     },
+    isCompleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+    },
     createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

@@ -39,7 +39,6 @@ const createServiceOrder = async(req, res = response) => {
         advancePayment,
         clientId,
         modelId,
-        statusId,
     } = req.body;
     const companyId = req.user.companyId;
     let uuid = getUuid();
@@ -62,7 +61,6 @@ const createServiceOrder = async(req, res = response) => {
         // Validate if the status belongs to company
         const findService = await ServiceStatus.findOne({
             where: {
-                statusId,
                 companyId,
                 isActive: true
             }
@@ -102,16 +100,15 @@ const createServiceOrder = async(req, res = response) => {
             advancePayment,
             clientId,
             modelId,
-            statusId,
         }, {
-            fields: ['uuid', 'number', 'observation', 'lockPatron', 'receptionDate', 'receptionHour', 'serialNumber', 'color', 'isRepair', 'techSpecifications', 'problemDescription', 'lockPass', 'advancePayment', 'clientId', 'statusId', 'modelId'],
-            returning: ['serviceOrderId', 'uuid', 'number', 'observation', 'lockPatron', 'receptionDate', 'receptionHour', 'serialNumber', 'color', 'isRepair', 'techSpecifications', 'problemDescription', 'lockPass', 'advancePayment', 'clientId', 'statusId', 'modelId', 'isActive', 'createdAt']
+            fields: ['uuid', 'number', 'observation', 'lockPatron', 'receptionDate', 'receptionHour', 'serialNumber', 'color', 'isRepair', 'techSpecifications', 'problemDescription', 'lockPass', 'advancePayment', 'clientId', 'modelId'],
+            returning: ['serviceOrderId', 'uuid', 'number', 'observation', 'lockPatron', 'receptionDate', 'receptionHour', 'serialNumber', 'color', 'isRepair', 'techSpecifications', 'problemDescription', 'lockPass', 'advancePayment', 'clientId', 'modelId', 'isActive', 'createdAt']
         });
         // Create the flow in status change table
         await StatusChange.create({
             uuid: getUuid(),
             sysDetail: messageFile[index].statusChageCreated,
-            statusId,
+            statusId: await getServiceStatusId(companyId),
             serviceOrderId: newServiceOrder.serviceOrderId,
             userId: req.user.userId
         }, {
@@ -161,9 +158,6 @@ const getActiveServiceOrder = async(req, res = response) => {
                     model: Brand,
                     attributes: ['uuid', 'name', 'shortName', 'url']
                 }]
-            }, {
-                model: ServiceStatus,
-                attributes: ['uuid', 'order', 'name', 'cost']
             }],
             limit,
             offset,
@@ -222,14 +216,7 @@ const getActiveServiceOrder = async(req, res = response) => {
                             shortName: serviceOrders[i].model.brand.shortName,
                             url: serviceOrders[i].model.brand.url
                         }
-                    },
-                    serviceStatus: {
-                        uuid: serviceOrders[i].serviceStatus.uuid,
-                        order: serviceOrders[i].serviceStatus.order,
-                        name: serviceOrders[i].serviceStatus.name,
-                        cost: serviceOrders[i].serviceStatus.cost
                     }
-
                 }
             }
             return res.status(200).json({
@@ -277,9 +264,6 @@ const getAllActiveServiceOrders = async(req, res = response) => {
                     model: Brand,
                     attributes: ['uuid', 'name', 'shortName', 'url']
                 }]
-            }, {
-                model: ServiceStatus,
-                attributes: ['uuid', 'order', 'name', 'cost']
             }],
             limit,
             offset,
@@ -337,14 +321,7 @@ const getAllActiveServiceOrders = async(req, res = response) => {
                             shortName: serviceOrders[i].model.brand.shortName,
                             url: serviceOrders[i].model.brand.url
                         }
-                    },
-                    serviceStatus: {
-                        uuid: serviceOrders[i].serviceStatus.uuid,
-                        order: serviceOrders[i].serviceStatus.order,
-                        name: serviceOrders[i].serviceStatus.name,
-                        cost: serviceOrders[i].serviceStatus.cost
                     }
-
                 }
             }
             return res.status(200).json({
@@ -392,11 +369,10 @@ const updateServiceOrder = async(req, res = response) => {
         lockPass,
         advancePayment,
         clientId,
-        modelId,
-        statusId,
+        modelId
     } = req.body;
     // Validate if a required value comes with nulled values
-    if (observation === '' || problemDescription === '' || clientId === '' || modelId === '' || statusId === '') {
+    if (observation === '' || problemDescription === '' || clientId === '' || modelId === '') {
         return res.status(400).json({
             ok: false,
             msg: messageFile[index].mandatoryMissing
@@ -448,7 +424,6 @@ const updateServiceOrder = async(req, res = response) => {
             advancePayment,
             clientId,
             modelId,
-            statusId,
             updatedAt: sequelize.literal('CURRENT_TIMESTAMP')
         }, {
             where: {
@@ -1104,6 +1079,30 @@ const getOrderNumber = async() => {
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].errorCreating + ' order number',
+            error
+        });
+    }
+}
+
+// Get the number of first service for a company
+const getServiceStatusId = async(companyId) => {
+    if( !companyId ){
+        return -1;
+    }
+    try {
+        const getFirstStatusId = await ServiceStatus.min('statusId', {
+            where: {
+                companyId,
+                isActive: true
+            }
+        });
+        return getFirstStatusId;
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Getting service status [${ companyId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].serviceStatusLow,
             error
         });
     }

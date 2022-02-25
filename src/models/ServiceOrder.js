@@ -100,14 +100,7 @@ const ServiceOrder = sequelize.define('serviceOrder', {
             model: 'model',
             key: 'modelId'
         }
-    },
-    statusId: {
-        type: Sequelize.INTEGER,
-        references: {
-            model: 'status',
-            key: 'statusId'
-        }
-    },
+    }
 }, {
     timestamps: false,
     freezeTableName: true
@@ -118,8 +111,5 @@ ServiceOrder.belongsTo(Client, { foreignKey: { name: 'clientId', targetKey: 'cli
 
 Model.hasMany(ServiceOrder, { foreignKey: { name: 'modelId', targetKey: 'modelId' } });
 ServiceOrder.belongsTo(Model, { foreignKey: { name: 'modelId', targetKey: 'modelId' } });
-
-ServiceStatus.hasMany(ServiceOrder, { foreignKey: { name: 'statusId', targetKey: 'statusId' } });
-ServiceOrder.belongsTo(ServiceStatus, { foreignKey: { name: 'statusId', targetKey: 'statusId' } });
 
 module.exports = ServiceOrder;

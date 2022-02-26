@@ -22,6 +22,11 @@ const StatusChange = sequelize.define('statusChange', {
         defaultValue: false,
         allowNull: false
     },
+    isActive: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
+    },
     createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

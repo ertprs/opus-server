@@ -220,19 +220,20 @@ const changeRoleStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].roleLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
-        }
-        await Role.update(
-            changeAction, {
-                where: {
-                    roleId
+        } else {
+            await Role.update(
+                changeAction, {
+                    where: {
+                        roleId
+                    }
                 }
-            }
-        );
-
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
+            );
+    
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
+        }
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing role status  [${ roleId }/${ activation }]: ${ error }`, 'error');

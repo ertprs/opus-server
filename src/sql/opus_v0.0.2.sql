@@ -717,7 +717,8 @@ CREATE TABLE "statusChange"
   "uuid" Character varying(10) NOT NULL,
   "details" Text,
   "sysDetail" Text,
-  "isCompleted" Boolean DEFAULT true NOT NULL,,
+  "isCompleted" Boolean DEFAULT false NOT NULL,
+  "isActive" Boolean DEFAULT true NOT NULL,
   "statusId" Integer,
   "serviceOrderId" Integer,
   "userId" Integer
@@ -737,6 +738,9 @@ COMMENT ON COLUMN "statusChange"."sysDetail" IS 'Backend sent details'
 ;
 COMMENT ON COLUMN "statusChange"."isCompleted" IS 'true: The status was completed
 false: The status is not complete or is still in progress'
+;
+COMMENT ON COLUMN "statusChange"."isActive" IS 'true: active service order
+false inactive service order'
 ;
 
 CREATE INDEX "statusChange_status_IX" ON "statusChange" ("statusId")

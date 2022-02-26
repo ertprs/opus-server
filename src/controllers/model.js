@@ -295,19 +295,19 @@ const changeModelStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].modelLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
-        }
-        await Model.update(
-            changeAction, {
-                where: {
-                    modelId
+        } else {
+            await Model.update(
+                changeAction, {
+                    where: {
+                        modelId
+                    }
                 }
-            }
-        );
-
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
+            );
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
+        }
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing model status  [${ modelId }/${ activation }]: ${ error }`, 'error');

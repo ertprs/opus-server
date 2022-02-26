@@ -309,19 +309,20 @@ const changePersonStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].personLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
-        }
-        await Person.update(
-            changeAction, {
-                where: {
-                    personId
+        } else {
+            await Person.update(
+                changeAction, {
+                    where: {
+                        personId
+                    }
                 }
-            }
-        );
-
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
+            );
+    
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
+        }
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing person status  [${ personId }/${ activation }]: ${ error }`, 'error');

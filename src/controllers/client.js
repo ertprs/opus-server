@@ -305,15 +305,12 @@ const changeClientStatus = async(req, res = response) => {
     let action;
     let activation;
     let searchCondition;
-
-
     if (!type) {
         return res.status(400).json({
             ok: false,
             msg: entityFile[index].typeUp + messageFile[index].notParam
         });
     }
-
     if (type.toLowerCase() === 'on') {
         activation = true;
         action = entityFile[index].clientUp + messageFile[index].changeStatusActionOnMale
@@ -369,19 +366,19 @@ const changeClientStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].clientLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
-        }
-        await Client.update(
-            changeAction, {
-                where: {
-                    clientId
+        } else {
+            await Client.update(
+                changeAction, {
+                    where: {
+                        clientId
+                    }
                 }
-            }
-        );
-
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
+            );
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
+        }
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing client status  [${ clientId }/${ activation }]: ${ error }`, 'error');

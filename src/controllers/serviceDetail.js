@@ -272,14 +272,15 @@ const changeStatusServiceDetail = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].serviceDetailLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
+        } else {
+            await ServiceDetail.update(
+                changeAction, searchCondition
+            );
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
         }
-        await ServiceDetail.update(
-            changeAction, searchCondition
-        );
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing service order  [${ serviceDetailId }/${ activation }]: ${ error }`, 'error');

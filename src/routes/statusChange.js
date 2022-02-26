@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getServiceOrderByStatusOrder, completeAnStatus, finishServiceOrder } = require('../controllers/statusChange');
+const { getServiceOrderByStatusOrder, completeAnStatus, finishServiceOrder, getOrderStatusHistory } = require('../controllers/statusChange');
 
 const { fieldValidation } = require('../middlewares/fieldValidation');
 const { tokenValidation } = require('../middlewares/jwtValidation');
@@ -21,6 +21,12 @@ router.post('/', [
     userValidation
 ], completeAnStatus);
 
+// Finish a service order
+// PUT: /api/{v}/change/finish/:serviceOrder
 router.put('/finish/:serviceOrder', [tokenValidation, userValidation], finishServiceOrder);
+
+// Get all history (flow) of a service order (history of status change)
+// GET: /api/{v}/change/history/:serviceOrder
+router.get('/history/:serviceOder', [tokenValidation, userValidation], getOrderStatusHistory);
 
 module.exports = router;

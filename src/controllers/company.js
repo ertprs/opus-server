@@ -235,19 +235,19 @@ const changeCompanyStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].companyLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
-        }
-        await Company.update(
-            changeAction, {
-                where: {
-                    companyId
+        } else {
+            await Company.update(
+                changeAction, {
+                    where: {
+                        companyId
+                    }
                 }
-            }
-        );
-
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
+            );
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
+        }
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing company status  [${ companyId }/${ activation }]: ${ error }`, 'error');

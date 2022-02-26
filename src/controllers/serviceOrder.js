@@ -456,6 +456,7 @@ const changeServiceOrderStatus = async(req, res = response) => {
     let action;
     let activation;
     let searchCondition;
+    let searchConditionChange;
     if (!type) {
         return res.status(400).json({
             ok: false,
@@ -500,7 +501,7 @@ const changeServiceOrderStatus = async(req, res = response) => {
                         companyId
                     }
                 }]
-            }
+            };
         } else {
             searchCondition = {
                 where: {
@@ -524,14 +525,23 @@ const changeServiceOrderStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].serviceOrderLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
+        } else {
+            await ServiceOrder.update(
+                changeAction, searchCondition
+            );
+            // Update the status change table with the value of on or off for the serviceOder
+           await StatusChange.update({
+               isActive: activation
+           }, {
+               where: {
+                   serviceOrderId
+               }
+           });
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
         }
-        await ServiceOrder.update(
-            changeAction, searchCondition
-        );
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing service order  [${ serviceOrderId }/${ activation }]: ${ error }`, 'error');

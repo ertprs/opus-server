@@ -279,19 +279,20 @@ const changeStatusOfServiceStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].serviceStatusLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
-        }
-        await ServiceStatus.update(
-            changeAction, {
-                where: {
-                    statusId
+        } else {
+            await ServiceStatus.update(
+                changeAction, {
+                    where: {
+                        statusId
+                    }
                 }
-            }
-        );
-
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
+            );
+    
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
+        }
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing status of a service status  [${ statusId }/${ activation }]: ${ error }`, 'error');

@@ -4,10 +4,10 @@ const { sequelize } = require('../database/connection');
 const ServiceOrder = require('../models/ServiceOrder');
 const Client = require('../models/Client');
 const ServiceStatus = require('../models/ServiceStatus');
-const Model = require('../models/Model');
+const Role = require('../models/Role');
 const Person = require('../models/Person');
-const ServiceDetail = require('../models/ServiceDetail');
-const Service = require('../models/Service');
+const User = require('../models/User');
+const Model = require('../models/Model');
 const Brand = require('../models/Brand');
 const StatusChange = require('../models/StatusChange');
 
@@ -23,6 +23,7 @@ const index = selectLanguage(process.env.APP_LANGUAGE);
 const messageFile = require('../data/messages.json');
 const entityFile = require('../data/entities.json');
 
+// Get all order status by the order in the service flow
 const getServiceOrderByStatusOrder = async(req, res = response) => {
     const companyId = req.user.companyId;
     const order = req.query.order;
@@ -63,6 +64,7 @@ const getServiceOrderByStatusOrder = async(req, res = response) => {
                 AND srv."isActive" = true
                 AND srv."isFinished" = false
                 AND chg."isCompleted" = false
+                AND chg."isActive" = true
                 AND sts."statusId" = ${ companyServiceStatus.statusId }
         `);
         const count = Number(findServiceOrderCount[0][0].count);
@@ -121,6 +123,7 @@ const getServiceOrderByStatusOrder = async(req, res = response) => {
                     AND srv."isActive" = true
                     AND srv."isFinished" = false
                     AND chg."isCompleted" = false
+                    AND chg."isActive" = true
                     AND sts."statusId" = ${ companyServiceStatus.statusId }
                 ORDER BY srv."receptionDate"
                 LIMIT ${ limit }
@@ -207,6 +210,7 @@ const getServiceOrderByStatusOrder = async(req, res = response) => {
     }
 }
 
+// Complete a fase of an order status
 const completeAnStatus = async(req, res = response) => {
     const companyId = req.user.companyId;
     const userId = req.user.userId;
@@ -234,7 +238,7 @@ const completeAnStatus = async(req, res = response) => {
                 ok: false,
                 msg: messageFile[index].notFound + entityFile[index].serviceOrderLow
             });
-        }
+        } 
         // 1. Get the order status in change status table
         const getCurrentStatusId = await StatusChange.max('statusId', {
             where: {
@@ -277,7 +281,6 @@ const completeAnStatus = async(req, res = response) => {
                 statusChangeId: getCurrentStatusChanged.statusChangeId
             }
         });
-        console.log('sttchaged:', getCurrentStatusChanged.statusChangeId)
         if( !getNextStatus ){
             // Update the service order
             await ServiceOrder.update({
@@ -383,8 +386,150 @@ const finishServiceOrder = async(req, res = response) => {
     }
 }
 
+// Get the history of an order status
+const getOrderStatusHistory = async(req, res = responser) => {
+    const serviceOrderId = req.params.serviceOder;
+    const companyId = req.user.companyId;
+    try {
+        // Validate if the order belongs to the company
+        const getServiceOder = await ServiceOrder.findOne({
+            where: {
+                serviceOrderId,
+                isActive: true
+            },
+            include: [{
+                model: Client,
+                where: {
+                    companyId
+                },
+                include: [{
+                    model: Person,
+                }]
+            },{
+                model: Model,
+                attributes: ['uuid', 'name', 'shortName', 'img', 'url'],
+                include: [{
+                    model: Brand,
+                    attributes: ['uuid', 'name', 'shortName', 'url']
+                }]
+            }]
+        });
+        if( !getServiceOder ) {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].serviceOrderLow
+            });
+        }
+        // Construct the serviceOrder objecto to return
+        const serviceOrder = {
+            serviceOrderId: getServiceOder.serviceOrderId,
+            uuid: getServiceOder.uuid,
+            number: getServiceOder.number,
+            observation: getServiceOder.observation,
+            lockPatron: getServiceOder.lockPatron ? opusDecrypt(getServiceOder.lockPatron) : undefined,
+            isFinished: getServiceOder.isFinished,
+            receptionDate: getServiceOder.receptionDate,
+            receptionHour: getServiceOder.receptionHour,
+            serialNumber: getServiceOder.serialNumber,
+            color: getServiceOder.color,
+            isRepair: getServiceOder.isRepair,
+            techSpecifications: getServiceOder.techSpecifications,
+            problemDescription: getServiceOder.problemDescription,
+            lockPass: getServiceOder.lockPass ? opusDecrypt(getServiceOder.lockPass) : undefined,
+            hasSurvey: getServiceOder.hasSurvey,
+            advancePayment: getServiceOder.advancePayment,
+            isActive: getServiceOder.isActive,
+            createdAt: getServiceOder.createdAt,
+            updatedAt: getServiceOder.updatedAt,
+            deletedAt: getServiceOder.deletedAt,
+            clientId: getServiceOder.clientId,
+            modelId: getServiceOder.modelId,
+            client: {
+                clientId: getServiceOder.client.clientId,
+                uuid: getServiceOder.client.uuid,
+                servicesNumber: getServiceOder.client.servicesNumber,
+                details: getServiceOder.client.details,
+                hasWhatsapp: getServiceOder.client.hasWhatsapp,
+                hasEmail: getServiceOder.client.hasEmail,
+                isActive: getServiceOder.client.isActive,
+                needsSurvey: getServiceOder.client.needsSurvey,
+                createdAt: getServiceOder.client.createdAt,
+                updatedAt: getServiceOder.client.updatedAt,
+                deletedAt: getServiceOder.client.deletedAt,
+                companyId: getServiceOder.client.companyId,
+                personId: getServiceOder.client.personId,
+                person: {
+                    personId: getServiceOder.client.person.personId,
+                    uuid: getServiceOder.client.person.uuid,
+                    names: getServiceOder.client.person.names ? opusDecrypt(getServiceOder.client.person.names) : undefined,
+                    lastNames: getServiceOder.client.person.lastNames ? opusDecrypt(getServiceOder.client.person.lastNames) : undefined,
+                    dni: getServiceOder.client.person.dni ? opusDecrypt(getServiceOder.client.person.dni) : undefined,
+                    mobilePhone: getServiceOder.client.person.mobilePhone ? opusDecrypt(getServiceOder.client.person.mobilePhone) : undefined,
+                    email: getServiceOder.client.person.email ? opusDecrypt(getServiceOder.client.person.email) : undefined,
+                    address: getServiceOder.client.person.address ? opusDecrypt(getServiceOder.client.person.address) : undefined,
+                    reference: getServiceOder.client.person.reference ? opusDecrypt(getServiceOder.client.person.reference) : undefined,
+                    birthdate: getServiceOder.client.person.birthdate,
+                    details: getServiceOder.client.person.details,
+                    isActive: getServiceOder.client.person.isActive,
+                    createdAt: getServiceOder.client.person.createdAt,
+                    updatedAt: getServiceOder.client.person.updatedAt,
+                    deletedAt: getServiceOder.client.person.deletedAt
+                }
+            },
+            model: {
+                uuid: getServiceOder.model.uuid,
+                name: getServiceOder.model.name,
+                shortName: getServiceOder.model.shortName,
+                img: getServiceOder.model.img,
+                url: getServiceOder.model.url,
+                brand: {
+                    uuid: getServiceOder.model.brand.uuid,
+                    name: getServiceOder.model.brand.name,
+                    shortName: getServiceOder.model.brand.shortName,
+                    url: getServiceOder.model.brand.url
+                }
+            }
+        }
+        // Get all order status changes with details
+        const getServiceHistory = await StatusChange.findAndCountAll({
+            where: {
+                serviceOrderId,
+                isActive: true
+            },
+            include: [{
+                model: ServiceStatus,
+                attributes: ['statusId', 'uuid', 'name', 'order', 'cost']
+            }, {
+                model: User,
+                attributes: ['uuid', 'nick', 'email'],
+                include: [{
+                    model: Role,
+                    attributes: ['uuid', 'name']
+                }]
+            }]
+        });
+        return res.status(200).json({
+            ok: true,
+            msg: entityFile[index].serviceOrderUp + messageFile[index].okGotFemale,
+            serviceOders: {
+                serviceOrder,
+                statusChanges: getServiceHistory
+            }
+        })
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Getting service order history [${ serviceOrderId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].serviceOrderLow,
+            error
+        });
+    }
+}
+
 module.exports = {
     getServiceOrderByStatusOrder,
     completeAnStatus,
-    finishServiceOrder
+    finishServiceOrder,
+    getOrderStatusHistory
 }

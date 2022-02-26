@@ -220,19 +220,19 @@ const changeBrandStatus = async(req, res = response) => {
                 ok: false,
                 msg: `${ messageFile[index].notFound }${ entityFile[index].brandLow }${ activation ? messageFile[index].alreadyActive : messageFile[index].alreadyInctive}`
             });
-        }
-        await Brand.update(
-            changeAction, {
-                where: {
-                    brandId
+        } else {
+            await Brand.update(
+                changeAction, {
+                    where: {
+                        brandId
+                    }
                 }
-            }
-        );
-
-        return res.status(200).json({
-            ok: true,
-            msg: action,
-        });
+            );
+            return res.status(200).json({
+                ok: true,
+                msg: action,
+            });
+        }
     } catch (error) {
         console.log('Error:', error);
         opusLog(`Changing brand status  [${ brandId }/${ activation }]: ${ error }`, 'error');

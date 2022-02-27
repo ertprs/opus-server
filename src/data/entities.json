@@ -49,7 +49,11 @@
         "dniUp": "Documento de identidad",
         "dniLow": "documento de identidad",
         "dniPluralUp": "Documentos de identidad",
-        "dniPluralLow": "Documentos de identidad"
+        "dniPluralLow": "Documentos de identidad",
+        "surveyUp": "Encuesta",
+        "surveyLow": "encuesta",
+        "surveyPluralUp": "Encuestas",
+        "surveyPluralLow": "encuestas"
     },
     {
         "language": "en",
@@ -102,6 +106,10 @@
         "dniUp": "Identification document",
         "dniLow": "identification document",
         "dniPluralUp": "Identification documents",
-        "dniPluralLow": "identification documents"
+        "dniPluralLow": "identification documents",
+        "surveyUp": "Survey",
+        "surveyLow": "survey",
+        "surveyPluralUp": "Surveys",
+        "surveyPluralLow": "surveys"
     }
 ]

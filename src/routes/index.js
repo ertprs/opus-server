@@ -22,6 +22,7 @@ const serviceOrderRoute = require('./serviceOrder');
 const serviceDetailRoute = require('./serviceDetail');
 const statusChangeRoute = require('./statusChange');
 const surveyRoute = require('./survey');
+const questionRoute = require('./question');
 
 app.use(`/api/${ version }/role`, roleRoute);
 app.use(`/api/${ version }/company`, companyRoute);
@@ -37,5 +38,6 @@ app.use(`/api/${ version }/order`, serviceOrderRoute);
 app.use(`/api/${ version }/detail`, serviceDetailRoute);
 app.use(`/api/${ version }/change`, statusChangeRoute);
 app.use(`/api/${ version }/survey`, surveyRoute);
+app.use(`/api/${ version }/question`, questionRoute);
 
 module.exports = app;

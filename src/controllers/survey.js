@@ -7,7 +7,6 @@ const Company = require('../models/Company');
 
 const { getUuid } = require('../helpers/uuidGenerator');
 const { opusLog } = require('../helpers/log4js');
-const { opusDecrypt } = require('../helpers/crypto');
 
 // Language and messages import
 const { selectLanguage } = require('../helpers/selectLanguage');

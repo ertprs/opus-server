@@ -1,6 +1,5 @@
 const { response } = require('express');
 const { sequelize } = require('../database/connection');
-const { Op } = require('sequelize');
 
 const Question = require('../models/Question');
 const Survey = require('../models/Survey');

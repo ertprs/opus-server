@@ -399,12 +399,12 @@ CREATE TABLE "serviceOrder"
   "problemDescription" Text NOT NULL,
   "lockPass" Character varying(200),
   "hasSurvey" Boolean DEFAULT false NOT NULL,
-  "isActive" Boolean DEFAULT true NOT NULL,,
+  "isActive" Boolean DEFAULT true NOT NULL,
   "createdAt" Timestamp with time zone DEFAULT current_timestamp NOT NULL,
   "updatedAt" Timestamp with time zone,
   "deletedAt" Timestamp with time zone,
   "clientId" Integer,
-  "modelId" Integer,
+  "modelId" Integer
   --"statusId" Integer
 )
 WITH (
@@ -450,7 +450,7 @@ false: inactive service order'
 ;
 COMMENT ON COLUMN "serviceOrder"."createdAt" IS 'Created timestamp'
 ;
-COMMENT ON COLUMN "serviceOrder"."updateAt" IS 'Updated timestamp'
+COMMENT ON COLUMN "serviceOrder"."updatedAt" IS 'Updated timestamp'
 ;
 COMMENT ON COLUMN "serviceOrder"."deletedAt" IS 'Deleted timestamp'
 ;

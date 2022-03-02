@@ -82,7 +82,7 @@ const authenticateUser = async(req, res = response) => {
 
     } catch (error) {
         console.log('Error:', error);
-        opusLog(`Authenticating a user [${ email }]: ${ error }`);
+        opusLog(`Authenticating a user [${ email }]: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
             msg: messageFile[index].authenticationError

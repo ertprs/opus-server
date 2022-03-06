@@ -5,6 +5,7 @@ const selectLanguage = ( language ) => {
     for (let i=0; i < messageFile.length; i++){
         if (messageFile[i].language === language){
             index = i;
+            i = messageFile.length;
         }
     }
     return index;

@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { createCompany, getActiveCompanies, getAllCompanies, updateCompany, changeCompanyStatus, deleteCompany } = require('../controllers/company');
+const { createCompany, getActiveCompanies, getAllCompanies, updateCompany, changeCompanyStatus, deleteCompany, getUserCompany } = require('../controllers/company');
 const { fieldValidation } = require('../middlewares/fieldValidation');
 const { tokenValidation } = require('../middlewares/jwtValidation');
 const { adminValidation, userValidation } = require('../middlewares/roleValidation');
@@ -17,11 +17,11 @@ router.post('/', [
 ], createCompany);
 
 // Get active companies
-// GET: /api/{v}/role
+// GET: /api/{v}/company
 router.get('/', [tokenValidation, userValidation], getActiveCompanies);
 
 // Get all companies for administration
-// GET: /api/{v}/role
+// GET: /api/{v}/company
 router.get('/all', [tokenValidation, adminValidation], getAllCompanies);
 
 // Updated a company
@@ -39,5 +39,8 @@ router.put('/status/:id', [tokenValidation, adminValidation], changeCompanyStatu
 // DELETE: /api/{v}/company/:id
 router.delete('/:id', [tokenValidation, adminValidation], deleteCompany);
 
+// Get the user's company
+// GET: /api/{v}/company/user
+router.get('/user', [tokenValidation, userValidation], getUserCompany);
 
 module.exports = router;

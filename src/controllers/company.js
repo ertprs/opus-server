@@ -288,11 +288,43 @@ const deleteCompany = async(req, res = response) => {
     }
 }
 
+// Get the user's company
+const getUserCompany = async(req, res = response) => {
+    const companyId = req.user.companyId;
+    try {
+        const findedCompany = await Company.findOne({
+            where: {
+                companyId,
+                isActive: true
+            }
+        });
+        if ( !findedCompany ) {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].companyLow
+            });
+        } 
+        return res.status(200).json({
+            ok: true,
+            msg: entityFile[index].companyUp + messageFile[index].okGotFemale,
+            company: findedCompany
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Getting user's company [${ companyId }]: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].companyLow
+        });
+    }
+}
+
 module.exports = {
     createCompany,
     getActiveCompanies,
     getAllCompanies,
     updateCompany,
     changeCompanyStatus,
-    deleteCompany
+    deleteCompany,
+    getUserCompany
 }

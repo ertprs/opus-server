@@ -39,7 +39,7 @@ const createPerson = async(req, res = response) => {
             email: email ? opusCrypt(email) : undefined,
             address: address ? opusCrypt(address) : undefined,
             reference: reference ? opusCrypt(reference) : undefined,
-            birthdate,
+            birthdate: birthdate ? birthdate : null,
             details
         };
         const newPerson = await Person.create(personToCreate, {
@@ -427,7 +427,7 @@ const getPersonByDni = async(req, res = response) => {
         opusLog(`Getting person by DNI: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorGetting + entityFile[index].personLow,
+            msg: messageFile[index].errorGetting + entityFile[index].personLow + messageFile[index].registerInCompany,
             error
         });
     }

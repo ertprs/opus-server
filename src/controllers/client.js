@@ -7,7 +7,7 @@ const Person = require('../models/Person');
 
 const { getUuid } = require('../helpers/uuidGenerator');
 const { opusLog } = require('../helpers/log4js');
-const { opusDecrypt } = require('../helpers/crypto');
+const { opusDecrypt, opusCrypt } = require('../helpers/crypto');
 
 // Language and messages import
 const { selectLanguage } = require('../helpers/selectLanguage');
@@ -419,11 +419,108 @@ const deleteClient = async(req, res = reponse) => {
     }
 }
 
+// Get client by person dni
+const getClientByDni = async(req, res = response ) => {
+    const companyId = req.user.companyId;
+    const dni = req.params.dni;
+    if( !dni ) {
+        return res.status(400).json({
+            ok: false,
+            msg: entityFile[index].dniPluralUp + messageFile[index].notParam
+        });
+    }
+    try {
+        // Find the client 
+        const findClient = await sequelize.query(`
+                SELECT	prs."personId",
+                        prs."uuid" "personUuid",
+                        prs."dni",
+                        prs."names",
+                        prs."lastNames",
+                        prs."phone",
+                        prs."mobilePhone",
+                        prs."email",
+                        prs."address",
+                        prs."reference",
+                        prs."details" "personDetails",
+                        prs."isActive" "personIsActive",
+                        prs."createdAt" "personCreatedAt",
+                        prs."updatedAt" "personUpdatedAt",
+                        cli."clientId",
+                        cli."uuid" "clientUuid",
+                        cli."companyId",
+                        cli."hasWhatsapp",
+                        cli."hasEmail",
+                        cli."createdAt" "clientCreatedAt",
+                        cli."updatedAt" "clientUpdatedAt",
+                        cli."details" "clientDetails",
+                        cli."needsSurvey",
+                        cli."isActive" "clientIsActive"
+                FROM "person" prs
+                INNER JOIN "client" cli ON prs."personId" = cli."personId"
+                WHERE prs."dni" LIKE '${ opusCrypt(dni) }'
+                AND prs."isActive" = true
+                AND cli."isActive" = true
+                AND cli."companyId" = ${ companyId };
+        `);
+        const data = findClient[0];
+        if( data.length === 0 ) {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].clientLow
+            });
+        }
+        // Contruct the JSON Object for send to client
+        const client = {
+            clientId: data[0].clientId,
+            uuid: data[0].clientUuid,
+            companyId: data[0].companyId,
+            hasEmail: data[0].hasEmail,
+            hasWhatsapp: data[0].hasWhatsapp,
+            needsSurvey: data[0].needsSurvey,
+            isActive: data[0].clientIsActive,
+            details: data[0].clientDetails,
+            createdAt: data[0].clientCreatedAt,
+            updatedAt: data[0].clientUpdatedAt,
+            person: {
+                personId: data[0].personId,
+                uuid: data[0].personUuid,
+                names: opusDecrypt(data[0].names),
+                lastNames: opusDecrypt(data[0].lastNames),
+                phone: data[0].phone ? opusDecrypt(data[0].phone) : null,
+                mobilePhone: opusDecrypt(data[0].mobilePhone),
+                email: opusDecrypt(data[0].email),
+                address: data[0].address ? opusDecrypt(data[0].address) : null,
+                reference: data[0].reference ? opusDecrypt(data[0].reference) : null,
+                details: data[0].personDetails,
+                isActive: data[0].personIsActive,
+                createdAt: data[0].personCreatedAt,
+                updatedAt: data[0].personUpdatedAt
+            }
+        };
+        // Send information to the client
+        return res.status(200).json({
+            ok: true,
+            msg: entityFile[index].clientUp + messageFile[index].okGotMale,
+            client
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Getting client by DNI: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].clientLow,
+            error
+        });
+    }
+}
+
 module.exports = {
     createClient,
     getActiveClients,
     getAllClients,
     updateClient,
     changeClientStatus,
-    deleteClient
+    deleteClient,
+    getClientByDni
 }

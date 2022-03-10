@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { createClient, getActiveClients, getAllClients, updateClient, changeClientStatus, deleteClient } = require('../controllers/client');
+const { createClient, getActiveClients, getAllClients, updateClient, changeClientStatus, deleteClient, getClientByDni } = require('../controllers/client');
 const { fieldValidation } = require('../middlewares/fieldValidation');
 const { tokenValidation } = require('../middlewares/jwtValidation');
 const { adminValidation, userValidation } = require('../middlewares/roleValidation');
@@ -40,5 +40,9 @@ router.put('/status/:id', [tokenValidation, userValidation], changeClientStatus)
 // Delete physically a client
 // DELETE: /api/{v}/client/:id
 router.delete('/:id', [tokenValidation, adminValidation], deleteClient);
+
+// Get all clients for administration
+// GET: /api/{v}/client/all
+router.get('/find/dni/:dni', [tokenValidation, userValidation], getClientByDni);
 
 module.exports = router;

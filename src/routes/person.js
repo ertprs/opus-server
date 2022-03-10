@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { createPerson, getActivePeople, changePersonStatus, updatePerson, getAllPeople, deletePerson } = require('../controllers/person');
+const { createPerson, getActivePeople, changePersonStatus, updatePerson, getAllPeople, deletePerson, getPersonByDni } = require('../controllers/person');
 const { fieldValidation } = require('../middlewares/fieldValidation');
 const { tokenValidation } = require('../middlewares/jwtValidation');
 const { userValidation, adminValidation } = require('../middlewares/roleValidation');
@@ -40,5 +40,9 @@ router.put('/status/:id', [tokenValidation, adminValidation], changePersonStatus
 // Delete physically a person
 // DELETE: /api/{v}/person/:id
 router.delete('/:id', [tokenValidation, adminValidation], deletePerson);
+
+// Get a person by dni
+// GET: /api/{v}/person/find/dni/:dni
+router.get('/find/dni/:dni', [tokenValidation, userValidation], getPersonByDni);
 
 module.exports = router;

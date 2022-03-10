@@ -363,11 +363,82 @@ const deletePerson = async(req, res = response) => {
     }
 }
 
+// Get person by dni
+const getPersonByDni = async(req, res = response) => {
+    const dni = req.params.dni;
+    if( !dni ) {
+        return res.status(400).json({
+            ok: false,
+            msg: entityFile[index].dniPluralUp + messageFile[index].notParam
+        });
+    }
+    try {
+        // Find the person 
+        const findPerson = await sequelize.query(`
+                SELECT	prs."personId",
+                        prs."uuid" "personUuid",
+                        prs."dni",
+                        prs."names",
+                        prs."lastNames",
+                        prs."phone",
+                        prs."mobilePhone",
+                        prs."email",
+                        prs."address",
+                        prs."reference",
+                        prs."details" "personDetails",
+                        prs."isActive" "personIsActive",
+                        prs."createdAt" "personCreatedAt",
+                        prs."updatedAt" "personUpdatedAt"
+                FROM "person" prs
+                WHERE prs."dni" LIKE '${ opusCrypt(dni) }'
+                AND prs."isActive" = true
+        `);
+        const data = findPerson[0];
+        if( data.length === 0 ) {
+            return res.status(404).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].personLow
+            });
+        }
+        // Contruct the JSON Object for send to person
+        const person = {
+            personId: data[0].personId,
+            uuid: data[0].personUuid,
+            names: opusDecrypt(data[0].names),
+            lastNames: opusDecrypt(data[0].lastNames),
+            phone: data[0].phone ? opusDecrypt(data[0].phone) : null,
+            mobilePhone: opusDecrypt(data[0].mobilePhone),
+            email: opusDecrypt(data[0].email),
+            address: data[0].address ? opusDecrypt(data[0].address) : null,
+            reference: data[0].reference ? opusDecrypt(data[0].reference) : null,
+            details: data[0].personDetails,
+            isActive: data[0].personIsActive,
+            createdAt: data[0].personCreatedAt,
+            updatedAt: data[0].personUpdatedAt
+        };
+        // Send information to the person
+        return res.status(200).json({
+            ok: true,
+            msg: entityFile[index].personUp + messageFile[index].okGotFemale,
+            person
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Getting person by DNI: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].personLow,
+            error
+        });
+    }
+}
+
 module.exports = {
     createPerson,
     getActivePeople,
     getAllPeople,
     updatePerson,
     changePersonStatus,
-    deletePerson
+    deletePerson,
+    getPersonByDni
 }

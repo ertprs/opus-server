@@ -27,6 +27,7 @@ const createPerson = async(req, res = response) => {
         details
     } = req.body;
     const uuid = getUuid();
+    console.log('phone:', phone);
     try {
         // Cipher the information
         let personToCreate = {
@@ -34,11 +35,11 @@ const createPerson = async(req, res = response) => {
             names: opusCrypt(names),
             lastNames: opusCrypt(lastNames),
             dni: opusCrypt(onlyNumbers(trimSpaces(dni))),
-            phone: phone ? opusCrypt(phone) : undefined,
+            phone: phone ? opusCrypt(trimSpaces(phone)) : null,
             mobilePhone: opusCrypt(onlyNumbers(trimSpaces(mobilePhone))),
-            email: email ? opusCrypt(email) : undefined,
-            address: address ? opusCrypt(address) : undefined,
-            reference: reference ? opusCrypt(reference) : undefined,
+            email: email ? opusCrypt(email) : null,
+            address: address ? opusCrypt(address) : null,
+            reference: reference ? opusCrypt(reference) : null,
             birthdate: birthdate ? birthdate : null,
             details
         };
@@ -56,7 +57,7 @@ const createPerson = async(req, res = response) => {
                     names,
                     lastNames,
                     dni: trimSpaces(dni),
-                    phone: trimSpaces(mobilePhone),
+                    phone: trimSpaces(phone),
                     mobilePhone: trimSpaces(mobilePhone),
                     email,
                     address,
@@ -106,6 +107,7 @@ const getActivePeople = async(req, res = response) => {
                     email: peopleFinded[i].email ? opusDecrypt(peopleFinded[i].email) : null,
                     address: peopleFinded[i].address ? opusDecrypt(peopleFinded[i].address) : null,
                     reference: peopleFinded[i].reference ? opusDecrypt(peopleFinded[i].reference) : null,
+                    phone: peopleFinded[i].phone ? opusDecrypt(peopleFinded[i].phone) : null,
                     birthdate: peopleFinded[i].birthdate,
                     details: peopleFinded[i].details,
                     isActive: peopleFinded[i].isActive,
@@ -163,6 +165,7 @@ const getAllPeople = async(req, res = response) => {
                     email: peopleFinded[i].email ? opusDecrypt(peopleFinded[i].email) : null,
                     address: peopleFinded[i].address ? opusDecrypt(peopleFinded[i].address) : null,
                     reference: peopleFinded[i].reference ? opusDecrypt(peopleFinded[i].reference) : null,
+                    phone: peopleFinded[i].phone ? opusDecrypt(peopleFinded[i].phone) : null,
                     birthdate: peopleFinded[i].birthdate,
                     details: peopleFinded[i].details,
                     isActive: peopleFinded[i].isActive,
@@ -419,7 +422,7 @@ const getPersonByDni = async(req, res = response) => {
         // Send information to the person
         return res.status(200).json({
             ok: true,
-            msg: entityFile[index].personUp + messageFile[index].okGotFemale,
+            msg: entityFile[index].personUp + messageFile[index].okGotFemale + messageFile[index].registerInCompany,
             person
         });
     } catch (error) {
@@ -427,7 +430,7 @@ const getPersonByDni = async(req, res = response) => {
         opusLog(`Getting person by DNI: ${ error }`, 'error');
         return res.status(500).json({
             ok: false,
-            msg: messageFile[index].errorGetting + entityFile[index].personLow + messageFile[index].registerInCompany,
+            msg: messageFile[index].errorGetting + entityFile[index].personLow,
             error
         });
     }

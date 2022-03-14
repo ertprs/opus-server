@@ -24,6 +24,9 @@ const Person = sequelize.define('person', {
         allowNull: false,
         unique: true
     },
+    phone: {
+        type: Sequelize.STRING(100)
+    },
     mobilePhone: {
         type: Sequelize.STRING(100),
         allowNull: false

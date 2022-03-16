@@ -11,6 +11,7 @@ const router = Router();
 // POST: /api/{v}/company
 router.post('/', [
     check('name', 'Name is requiered').not().isEmpty(),
+    check('shortName', 'Short Name is requiered').not().isEmpty(),
     fieldValidation,
     tokenValidation,
     adminValidation

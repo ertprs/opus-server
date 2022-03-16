@@ -9,9 +9,14 @@ const { opusLog } = require('../helpers/log4js');
 const { selectLanguage } = require('../helpers/selectLanguage');
 const index = selectLanguage(process.env.APP_LANGUAGE);
 const messageFile = require('../data/messages.json');
+const entityFile = require('../data/entities.json');
 const Session = require('../models/Session');
 const { getUuid } = require('../helpers/uuidGenerator');
 const { sequelize } = require('../database/connection');
+const Role = require('../models/Role');
+const { upperCase } = require('../helpers/stringHandling');
+const adminRole = process.env.USR_ADMIN;
+const adminArray = adminRole.split(',');
 
 const authenticateUser = async(req, res = response) => {
     const { email, password } = req.body;
@@ -155,8 +160,51 @@ const logoutUser = async(req, res = response) => {
     }
 }
 
+// Get the role of the authenticated user
+const getAuthRole = async(req, res = response) => {
+    const userId = req.user.userId;
+    const roleId = req.user.roleId;
+    try {
+        const getAuthRole = await Role.findOne({
+            where: {
+                roleId
+            }
+        });
+        if( !getAuthRole ){
+            return res.status(400).json({
+                ok: false,
+                msg: messageFile[index].notFound + entityFile[index].roleLow
+            })
+        }
+        const opus = true;
+        const opusec = adminArray.includes(upperCase(getAuthRole.name)) ? true : false;
+        return res.status(200).json({
+            ok: true,
+            msg: entityFile[index].roleUp + messageFile[index].okGotMale,
+            role: {
+                role: {
+                    roleId:getAuthRole.roleId,
+                    uuid: getAuthRole.uuid,
+                    name: getAuthRole.name,
+                    description: getAuthRole.description,
+                },
+                opus,
+                opusec
+            }
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Get authenticated user role [${ userId }]: ${ error }`);
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].roleLow
+        });
+    }
+}
+
 module.exports = {
     authenticateUser,
     renewToken,
-    logoutUser
+    logoutUser,
+    getAuthRole
 }

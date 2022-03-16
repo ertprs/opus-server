@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { authenticateUser, renewToken, logoutUser } = require('../controllers/authentication');
+const { authenticateUser, renewToken, logoutUser, getAuthRole } = require('../controllers/authentication');
 const { fieldValidation } = require('../middlewares/fieldValidation');
 const { tokenValidation } = require('../middlewares/jwtValidation');
 
@@ -24,5 +24,9 @@ router.get('/renew', tokenValidation, renewToken);
 // Logging out a user
 // GET: /api/{v}/auth/logout
 router.get('/logout', tokenValidation, logoutUser);
+
+// Get authenticated user's role
+// GET: /api/{v}/auth/role
+router.get('/role', tokenValidation, getAuthRole);
 
 module.exports = router;

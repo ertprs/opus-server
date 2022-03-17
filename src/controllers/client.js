@@ -15,7 +15,7 @@ const index = selectLanguage(process.env.APP_LANGUAGE);
 const messageFile = require('../data/messages.json');
 const entityFile = require('../data/entities.json');
 const { getRoleName } = require('../middlewares/roleValidation');
-const { lowerCase } = require('../helpers/stringHandling');
+const { lowerCase, trimSpaces, onlyNumbers } = require('../helpers/stringHandling');
 
 // Create a new client (If client exists, don't create)
 const createClient = async(req, res = response) => {
@@ -515,6 +515,102 @@ const getClientByDni = async(req, res = response ) => {
     }
 }
 
+// Register a new cliente
+const registerClient = async(req, res = response) => {
+    const companyId = req.user.companyId;
+    const userId = req.user.userId;
+    const {
+        dni,
+        names,
+        lastNames,
+        mobilePhone,
+        email,
+        hasEmail,
+        hasWhatsapp,
+        phone,
+        address,
+        reference,
+        details,
+        birthdate
+    } = req.body;
+    let message = '';
+    let personId;
+    try {
+        // Find the person by dni
+        const findPerson = await Person.findOne({
+            where: {
+                dni: opusCrypt(trimSpaces(dni)),
+                isActive: true
+            }
+        });
+        if( findPerson ) {
+            personId = findPerson.personId;
+            const findClient = await Client.findOne({
+                where: {
+                    personId
+                }
+            });
+            if( findClient ) {
+                return res.status(200).json({
+                    ok: true,
+                    msg: entityFile[index].clientUp + messageFile[index].alreadyExists,
+                    client: findClient
+                });
+            }
+        } else {
+            // Encrypt the information of the person
+            console.log('Lets create a person');
+            let personObject = {
+                uuid: getUuid(),
+                names: opusCrypt(names),
+                lastNames: opusCrypt(lastNames),
+                dni: opusCrypt(onlyNumbers(trimSpaces(dni))),
+                phone: phone ? opusCrypt(trimSpaces(phone)) : null,
+                mobilePhone: opusCrypt(onlyNumbers(trimSpaces(mobilePhone))),
+                email: email ? opusCrypt(email) : null,
+                address: address ? opusCrypt(address) : null,
+                reference: reference ? opusCrypt(reference) : null,
+                birthdate: birthdate ? birthdate : null,
+            }
+            // Create Person
+            const person = await Person.create( personObject, {
+                fields: ['uuid', 'names', 'lastNames', 'dni', 'phone', 'mobilePhone', 'email', 'address', 'reference', 'birthdate'],
+                returning: ['personId', 'uuid', 'names', 'lastNames', 'dni', 'phone', 'mobilePhone', 'email', 'address', 'reference', 'birthdate', 'isActive', 'createdAt']
+            });
+            personId = person.personId;
+            message = entityFile[index].personUp + ', ';
+        }
+        // Register the client with person and company
+        const newClient = await Client.create({
+            uuid: getUuid(),
+            hasWhatsapp,
+            hasEmail: email ? true: hasEmail,
+            details,
+            companyId,
+            personId
+        }, {
+            fields: ['uuid', 'hasWhatsapp', 'hasEmail', 'details', 'companyId', 'personId'],
+            returning: ['clientId', 'uuid', 'hasWhatsapp', 'hasEmail', 'details', 'needsSurvey', 'personId', 'companyId', 'isActive', 'createdAt']
+        });
+        message = message + entityFile[index].clientUp;
+        return res.status(200).json({
+            ok: true,
+            msg: message + messageFile[index].okCreateMale,
+            client: newClient
+        });
+    } catch (error) {
+        console.log('Error:', error);
+        opusLog(`Creating client with person: ${ error }`, 'error');
+        return res.status(500).json({
+            ok: false,
+            msg: messageFile[index].errorGetting + entityFile[index].clientLow + '/' + entityFile[index].personLow,
+            error
+        });
+    }
+}
+
+// TODO: Upadte services number after register an order
+
 module.exports = {
     createClient,
     getActiveClients,
@@ -522,5 +618,6 @@ module.exports = {
     updateClient,
     changeClientStatus,
     deleteClient,
-    getClientByDni
+    getClientByDni,
+    registerClient
 }

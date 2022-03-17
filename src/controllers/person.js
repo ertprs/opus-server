@@ -90,7 +90,10 @@ const getActivePeople = async(req, res = response) => {
                 isActive: true
             },
             limit,
-            offset
+            offset,
+            order: [
+                ['createdAt', 'ASC']
+            ]
         });
         if (activePeople.count > 0) {
             let peopleFinded = activePeople.rows;
@@ -148,7 +151,10 @@ const getAllPeople = async(req, res = response) => {
     try {
         const activePeople = await Person.findAndCountAll({
             limit,
-            offset
+            offset,
+            order: [
+                ['createdAt', 'ASC']
+            ]
         });
         if (activePeople.count > 0) {
             let peopleFinded = activePeople.rows;

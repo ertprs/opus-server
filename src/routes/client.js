@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { createClient, getActiveClients, getAllClients, updateClient, changeClientStatus, deleteClient, getClientByDni } = require('../controllers/client');
+const { createClient, getActiveClients, getAllClients, updateClient, changeClientStatus, deleteClient, getClientByDni, registerClient } = require('../controllers/client');
 const { fieldValidation } = require('../middlewares/fieldValidation');
 const { tokenValidation } = require('../middlewares/jwtValidation');
 const { adminValidation, userValidation } = require('../middlewares/roleValidation');
@@ -44,5 +44,19 @@ router.delete('/:id', [tokenValidation, adminValidation], deleteClient);
 // Get all clients for administration
 // GET: /api/{v}/client/all
 router.get('/find/dni/:dni', [tokenValidation, userValidation], getClientByDni);
+
+// Register a new client
+// POST: /api/{v}/client/register
+router.post('/register', [
+        check('dni', 'DNI is required').not().isEmpty(),
+        check('names', 'Names are required').not().isEmpty(),
+        check('lastNames', 'Lastnames are required').not().isEmpty(),
+        check('mobilePhone', 'Mobile phone is required').not().isEmpty(),
+        check('email', 'Email is required').not().isEmpty(),
+        check('email', 'Email is invalid').isEmail(),
+        fieldValidation,
+        tokenValidation,
+        userValidation,
+    ], registerClient);
 
 module.exports = router;
